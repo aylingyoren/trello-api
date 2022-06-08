@@ -10,6 +10,7 @@ const authRouter = require("./routes/authRouter");
 const logoutRouter = require("./routes/logoutRouter");
 const verifyJWT = require("./middleware/verifyJWT");
 const boardsRouter = require("./routes/api/boardsRouter");
+const cardsRouter = require("./routes/api/cardsRouter");
 const errorHandler = require("./middleware/errorHandler");
 
 const PORT = process.env.PORT || 5005;
@@ -32,6 +33,7 @@ app.use("/logout", logoutRouter);
 
 app.use(verifyJWT);
 app.use("/api/boards", boardsRouter);
+app.use("/api/cards", cardsRouter);
 
 app.use(errorHandler);
 

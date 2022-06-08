@@ -4,10 +4,7 @@ const setCards = (data) => (cards = data);
 
 const getAllCards = async (req, res) => {
   try {
-    const selectedCards = cards.filter(
-      (c) => c.boardId === parseInt(req.params.boardId)
-    );
-    await res.json(selectedCards);
+    await res.json(cards);
   } catch (err) {
     console.log(err);
   }
@@ -15,8 +12,8 @@ const getAllCards = async (req, res) => {
 
 const createCard = async (req, res) => {
   try {
-    const { name, description, estimate, status, dueDate, labels } = req.body;
-    const boardId = parseInt(req.params.boardId);
+    const { name, description, estimate, status, dueDate, labels, boardId } =
+      req.body;
     const newCard = {
       id: cards?.length ? cards[cards.length - 1].id + 1 : 1,
       name,
@@ -26,22 +23,8 @@ const createCard = async (req, res) => {
       status,
       dueDate,
       labels,
-      boardId,
+      boardId: parseInt(boardId),
     };
-    if (
-      !newCard.name ||
-      !newCard.estimate ||
-      !newCard.description ||
-      !newCard.dueDate ||
-      !newCard.labels ||
-      !newCard.status
-    ) {
-      return res.status(400).json({
-        message:
-          "Name, description, estimate, status, dueDate and labels are required.",
-      });
-    }
-    if (!boardId) return res.sendStatus(404);
     setCards([...cards, newCard]);
     await res.status(201).json(cards);
   } catch (err) {
@@ -58,8 +41,6 @@ const updateCard = async (req, res) => {
         .json({ message: `Card ID ${req.params.cardId} not found` });
     }
     const { name, description, estimate, status, dueDate, labels } = req.body;
-    const boardId = parseInt(req.params.boardId);
-    if (!boardId) return res.sendStatus(404);
     if (name) card.name = name;
     if (description) card.description = description;
     if (estimate) card.estimate = estimate;
@@ -87,8 +68,6 @@ const deleteCard = async (req, res) => {
         .status(400)
         .json({ message: `Card ID ${req.params.cardId} not found` });
     }
-    const boardId = parseInt(req.params.boardId);
-    if (!boardId) return res.sendStatus(404);
     const filteredArray = cards.filter((c) => c.id !== card.id);
     setCards([...filteredArray]);
     res.json(cards);
@@ -105,8 +84,6 @@ const getCard = async (req, res) => {
         .status(400)
         .json({ message: `Card ID ${req.params.cardId} not found` });
     }
-    const boardId = parseInt(req.params.boardId);
-    if (!boardId) return res.sendStatus(404);
     await res.json(card);
   } catch (err) {
     console.log(err);

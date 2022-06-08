@@ -17,7 +17,7 @@ const cardSchema = Joi.object().keys({
   status: Joi.string().alphanum().min(3).max(50).required(),
   dueDate: Joi.string().required(),
   labels: Joi.array().items(Joi.string().alphanum().min(3).max(50)).required(),
-  boardId: Joi.number().integer(),
+  boardId: Joi.number().integer().required(),
 });
 
 module.exports = { boardSchema, cardSchema };
