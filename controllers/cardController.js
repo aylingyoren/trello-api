@@ -1,4 +1,5 @@
 let cards = require("../model/cards.json");
+const logger = require("../config/logger");
 
 const setCards = (data) => (cards = data);
 
@@ -6,7 +7,7 @@ const getAllCards = async (req, res) => {
   try {
     await res.json(cards);
   } catch (err) {
-    console.log(err);
+    logger.error(err);
   }
 };
 
@@ -28,7 +29,7 @@ const createCard = async (req, res) => {
     setCards([...cards, newCard]);
     await res.status(201).json(cards);
   } catch (err) {
-    console.log(err);
+    logger.error(err);
   }
 };
 
@@ -56,7 +57,7 @@ const updateCard = async (req, res) => {
     );
     res.json(cards);
   } catch (err) {
-    console.log(err);
+    logger.error(err);
   }
 };
 
@@ -72,7 +73,7 @@ const deleteCard = async (req, res) => {
     setCards([...filteredArray]);
     res.json(cards);
   } catch (err) {
-    console.log(err);
+    logger.error(err);
   }
 };
 
@@ -86,7 +87,7 @@ const getCard = async (req, res) => {
     }
     await res.json(card);
   } catch (err) {
-    console.log(err);
+    logger.error(err);
   }
 };
 

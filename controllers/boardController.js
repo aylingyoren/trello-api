@@ -1,4 +1,5 @@
 let boards = require("../model/board.json");
+const logger = require("../config/logger");
 
 const setBoards = (data) => (boards = data);
 
@@ -6,7 +7,7 @@ const getAllBoards = async (req, res) => {
   try {
     await res.json(boards);
   } catch (err) {
-    console.log(err);
+    logger.error(err);
   }
 };
 
@@ -23,7 +24,7 @@ const createBoard = async (req, res) => {
     setBoards([...boards, newBoard]);
     await res.status(201).json(boards);
   } catch (err) {
-    console.log(err);
+    logger.error(err);
   }
 };
 
@@ -48,7 +49,7 @@ const updateBoard = async (req, res) => {
     );
     res.json(boards);
   } catch (err) {
-    console.log(err);
+    logger.error(err);
   }
 };
 
@@ -64,7 +65,7 @@ const deleteBoard = async (req, res) => {
     setBoards([...filteredArray]);
     res.json(boards);
   } catch (err) {
-    console.log(err);
+    logger.error(err);
   }
 };
 
@@ -78,7 +79,7 @@ const getBoard = async (req, res) => {
     }
     await res.json(board);
   } catch (err) {
-    console.log(err);
+    logger.error(err);
   }
 };
 

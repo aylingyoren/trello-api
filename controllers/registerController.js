@@ -2,6 +2,7 @@ const fsPromises = require("fs").promises;
 const path = require("path");
 const bcrypt = require("bcrypt");
 let users = require("../model/users.json");
+const logger = require("../config/logger");
 
 const setUsers = (data) => (users = data);
 
@@ -28,6 +29,7 @@ const handleNewUser = async (req, res) => {
     res.status(201).json({ success: `New user ${name} created!` });
   } catch (err) {
     res.status(500).json({ message: err.message });
+    logger.error(err);
   }
 };
 
