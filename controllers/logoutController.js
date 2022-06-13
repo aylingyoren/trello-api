@@ -16,9 +16,11 @@ const handleLogout = async (req, res) => {
         httpOnly: true,
         maxAge: 24 * 60 * 60 * 1000,
       });
-      return res.sendStatus(204);
+      return res.status(204).json({ message: "You are logged out." });
     }
-    const otherUsers = users.filter((p) => p.username !== foundUser.username);
+    const otherUsers = users.filter(
+      ({ userName }) => userName !== foundUser.userName
+    );
     const currentUser = { ...foundUser, accessToken: "" };
     setUsers([...otherUsers, currentUser]);
     await fsPromises.writeFile(
@@ -29,8 +31,9 @@ const handleLogout = async (req, res) => {
       httpOnly: true,
       maxAge: 24 * 60 * 60 * 1000,
     });
-    res.sendStatus(204);
+    res.status(204).json({ message: "You are logged out." });
   } catch (err) {
+    res.status(500).json({ message: err.message });
     logger.error(err);
   }
 };

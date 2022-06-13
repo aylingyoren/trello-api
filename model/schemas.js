@@ -1,5 +1,10 @@
 const Joi = require("joi");
 
+const userSchema = Joi.object().keys({
+  name: Joi.string().alphanum().min(3).max(50).required(),
+  pwd: Joi.string().min(8).max(50).required(),
+});
+
 const boardSchema = Joi.object().keys({
   id: Joi.number().integer(),
   name: Joi.string().alphanum().min(3).max(50).required(),
@@ -20,4 +25,4 @@ const cardSchema = Joi.object().keys({
   boardId: Joi.number().integer().required(),
 });
 
-module.exports = { boardSchema, cardSchema };
+module.exports = { userSchema, boardSchema, cardSchema };

@@ -1,7 +1,7 @@
 const express = require("express");
 const boardsRouter = express.Router();
 const boardController = require("../../controllers/boardController");
-const ROLES_LIST = require("../../config/roles_list");
+const ROLES = require("../../config/roles");
 const verifyRoles = require("../../middleware/verifyRoles");
 const dataValidator = require("../../middleware/dataValidator");
 const schemas = require("../../model/schemas");
@@ -10,7 +10,7 @@ boardsRouter
   .route("/")
   .get(boardController.getAllBoards)
   .post(
-    verifyRoles(ROLES_LIST.Admin),
+    verifyRoles(ROLES.ADMIN),
     dataValidator(schemas.boardSchema),
     boardController.createBoard
   );
@@ -18,7 +18,7 @@ boardsRouter
 boardsRouter
   .route("/:boardId")
   .get(boardController.getBoard)
-  .put(verifyRoles(ROLES_LIST.Admin), boardController.updateBoard)
-  .delete(verifyRoles(ROLES_LIST.Admin), boardController.deleteBoard);
+  .put(verifyRoles(ROLES.ADMIN), boardController.updateBoard)
+  .delete(verifyRoles(ROLES.ADMIN), boardController.deleteBoard);
 
 module.exports = boardsRouter;
