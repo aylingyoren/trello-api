@@ -1,11 +1,11 @@
-const Joi = require("joi");
+import Joi, { Schema } from "joi";
 
-const userSchema = Joi.object().keys({
+export const UserSchema: Schema = Joi.object().keys({
   name: Joi.string().alphanum().min(3).max(50).required(),
   pwd: Joi.string().min(8).max(50).required(),
 });
 
-const boardSchema = Joi.object().keys({
+export const BoardSchema: Schema = Joi.object().keys({
   id: Joi.number().integer(),
   name: Joi.string().alphanum().min(3).max(50).required(),
   color: Joi.string().alphanum().min(3).max(100).required(),
@@ -13,7 +13,7 @@ const boardSchema = Joi.object().keys({
   createdAt: Joi.date(),
 });
 
-const cardSchema = Joi.object().keys({
+export const CardSchema: Schema = Joi.object().keys({
   id: Joi.number().integer(),
   name: Joi.string().min(3).max(50).required(),
   description: Joi.string().max(300).required(),
@@ -24,5 +24,3 @@ const cardSchema = Joi.object().keys({
   labels: Joi.array().items(Joi.string().alphanum().min(3).max(50)).required(),
   boardId: Joi.number().integer().required(),
 });
-
-module.exports = { userSchema, boardSchema, cardSchema };

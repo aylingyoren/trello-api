@@ -1,20 +1,23 @@
-const fsPromises = require("fs").promises;
-const path = require("path");
-const bcrypt = require("bcrypt");
+import { Request, Response } from "express";
+import fs from "fs";
+const fsPromises = fs.promises;
+import path from "path";
+import bcrypt from "bcrypt";
 let users = require("../model/users.json");
-const ROLES = require("../config/roles");
-const logger = require("../config/logger");
+import ROLES from "../config/roles";
+import logger from "../config/logger";
+import { User } from "../types/User";
 
-const setUsers = (data) => (users = data);
+const setUsers = (data: User[]) => (users = data);
 
-const handleNewUser = async (req, res) => {
+const handleNewUser = async (req: Request, res: Response) => {
   const { name, pwd } = req.body;
-  const duplicate = users.find(({ userName }) => userName === name);
+  const duplicate: User = users.find(({ userName }) => userName === name);
   if (duplicate)
     return res.status(409).json({ message: `User ${name} already exists.` });
   try {
-    const hashedPwd = await bcrypt.hash(pwd, 10);
-    const newUser = {
+    const hashedPwd: string = await bcrypt.hash(pwd, 10);
+    const newUser: User = {
       userName: name,
       roles: { User: ROLES.USER },
       password: hashedPwd,
@@ -31,4 +34,4 @@ const handleNewUser = async (req, res) => {
   }
 };
 
-module.exports = { handleNewUser };
+export default handleNewUser;

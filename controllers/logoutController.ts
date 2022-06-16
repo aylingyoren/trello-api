@@ -1,16 +1,19 @@
-const fsPromises = require("fs").promises;
-const path = require("path");
+import { Request, Response } from "express";
+import fs from "fs";
+const fsPromises = fs.promises;
+import path from "path";
 let users = require("../model/users.json");
-const logger = require("../config/logger");
+import { User } from "../types/User";
+import logger from "../config/logger";
 
-const setUsers = (data) => (users = data);
+const setUsers = (data: User[]) => (users = data);
 
-const handleLogout = async (req, res) => {
+const handleLogout = async (req: Request, res: Response) => {
   try {
     const cookies = req.cookies;
     if (!cookies?.jwt) return res.sendStatus(204);
-    const accessToken = cookies.jwt;
-    const foundUser = users.find((p) => p.accessToken === accessToken);
+    const accessToken: string = cookies.jwt;
+    const foundUser: User = users.find((p) => p.accessToken === accessToken);
     if (!foundUser) {
       res.clearCookie("jwt", {
         httpOnly: true,
@@ -18,10 +21,10 @@ const handleLogout = async (req, res) => {
       });
       return res.status(204).json({ message: "You are logged out." });
     }
-    const otherUsers = users.filter(
+    const otherUsers: User[] = users.filter(
       ({ userName }) => userName !== foundUser.userName
     );
-    const currentUser = { ...foundUser, accessToken: "" };
+    const currentUser: User = { ...foundUser, accessToken: "" };
     setUsers([...otherUsers, currentUser]);
     await fsPromises.writeFile(
       path.join(__dirname, "..", "model", "users.json"),
@@ -38,4 +41,4 @@ const handleLogout = async (req, res) => {
   }
 };
 
-module.exports = { handleLogout };
+export default handleLogout;

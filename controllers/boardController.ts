@@ -1,10 +1,12 @@
-const _ = require("lodash");
+import { Request, Response } from "express";
+import _ from "lodash";
 let boards = require("../model/board.json");
-const logger = require("../config/logger");
+import { Board } from "../types/Board";
+import logger from "../config/logger";
 
-const setBoards = (data) => (boards = data);
+const setBoards = (data: Board[]) => (boards = data);
 
-const getAllBoards = async (req, res) => {
+export const getAllBoards = async (req: Request, res: Response) => {
   try {
     await res.json(boards);
   } catch (err) {
@@ -13,9 +15,9 @@ const getAllBoards = async (req, res) => {
   }
 };
 
-const createBoard = async (req, res) => {
+export const createBoard = async (req: Request, res: Response) => {
   try {
-    const lastBoard = boards[boards.length - 1];
+    const lastBoard: Board = boards[boards.length - 1];
     const { name, color, description } = req.body;
     const newBoard = {
       id: _.isEmpty(boards) ? 1 : lastBoard.id + 1,
@@ -32,10 +34,10 @@ const createBoard = async (req, res) => {
   }
 };
 
-const updateBoard = async (req, res) => {
+export const updateBoard = async (req: Request, res: Response) => {
   const { boardId } = req.params;
   try {
-    const board = boards.find(({ id }) => id === Number(boardId));
+    const board: Board = boards.find(({ id }) => id === Number(boardId));
     if (!board) {
       return res.status(400).json({ message: `Board ID ${boardId} not found` });
     }
@@ -43,8 +45,10 @@ const updateBoard = async (req, res) => {
     if (name) board.name = name;
     if (color) board.color = color;
     if (description) board.description = description;
-    const filteredArray = boards.filter(({ id }) => id !== Number(boardId));
-    const unsortedArray = [...filteredArray, board];
+    const filteredArray: Board[] = boards.filter(
+      ({ id }) => id !== Number(boardId)
+    );
+    const unsortedArray: Board[] = [...filteredArray, board];
     setBoards(
       unsortedArray.sort((a, b) => (a.id > b.id ? 1 : a.id < b.id ? -1 : 0))
     );
@@ -55,14 +59,14 @@ const updateBoard = async (req, res) => {
   }
 };
 
-const deleteBoard = async (req, res) => {
+export const deleteBoard = async (req: Request, res: Response) => {
   const { boardId } = req.params;
   try {
-    const board = boards.find(({ id }) => id === Number(boardId));
+    const board: Board = boards.find(({ id }) => id === Number(boardId));
     if (!board) {
       return res.status(400).json({ message: `Board ID ${boardId} not found` });
     }
-    const filteredArray = boards.filter(({ id }) => id !== board.id);
+    const filteredArray: Board[] = boards.filter(({ id }) => id !== board.id);
     setBoards([...filteredArray]);
     res.json(boards);
   } catch (err) {
@@ -71,10 +75,10 @@ const deleteBoard = async (req, res) => {
   }
 };
 
-const getBoard = async (req, res) => {
+export const getBoard = async (req: Request, res: Response) => {
   const { boardId } = req.params;
   try {
-    const board = boards.find(({ id }) => id === Number(boardId));
+    const board: Board = boards.find(({ id }) => id === Number(boardId));
     if (!board) {
       return res.status(400).json({ message: `Board ID ${boardId} not found` });
     }
@@ -83,12 +87,4 @@ const getBoard = async (req, res) => {
     res.status(500).json({ message: err.message });
     logger.error(err);
   }
-};
-
-module.exports = {
-  getAllBoards,
-  createBoard,
-  updateBoard,
-  deleteBoard,
-  getBoard,
 };

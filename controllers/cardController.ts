@@ -1,10 +1,12 @@
-const _ = require("lodash");
+import { Request, Response } from "express";
+import _ from "lodash";
 let cards = require("../model/cards.json");
-const logger = require("../config/logger");
+import logger from "../config/logger";
+import { Card } from "../types/Card";
 
-const setCards = (data) => (cards = data);
+const setCards = (data: Card[]) => (cards = data);
 
-const getAllCards = async (req, res) => {
+export const getAllCards = async (req: Request, res: Response) => {
   try {
     await res.json(cards);
   } catch (err) {
@@ -13,9 +15,9 @@ const getAllCards = async (req, res) => {
   }
 };
 
-const createCard = async (req, res) => {
+export const createCard = async (req: Request, res: Response) => {
   try {
-    const lastCard = cards[cards.length - 1];
+    const lastCard: Card = cards[cards.length - 1];
     const { name, description, estimate, status, dueDate, labels, boardId } =
       req.body;
     const newCard = {
@@ -37,10 +39,10 @@ const createCard = async (req, res) => {
   }
 };
 
-const updateCard = async (req, res) => {
+export const updateCard = async (req: Request, res: Response) => {
   const { cardId } = req.params;
   try {
-    const card = cards.find(({ id }) => id === Number(cardId));
+    const card: Card = cards.find(({ id }) => id === Number(cardId));
     if (!card) {
       return res.status(400).json({ message: `Card ID ${cardId} not found` });
     }
@@ -51,8 +53,10 @@ const updateCard = async (req, res) => {
     if (status) card.status = status;
     if (dueDate) card.dueDate = dueDate;
     if (labels) card.labels = labels;
-    const filteredArray = cards.filter(({ id }) => id !== Number(cardId));
-    const unsortedArray = [...filteredArray, card];
+    const filteredArray: Card[] = cards.filter(
+      ({ id }) => id !== Number(cardId)
+    );
+    const unsortedArray: Card[] = [...filteredArray, card];
     setCards(
       unsortedArray.sort((a, b) => (a.id > b.id ? 1 : a.id < b.id ? -1 : 0))
     );
@@ -63,14 +67,14 @@ const updateCard = async (req, res) => {
   }
 };
 
-const deleteCard = async (req, res) => {
+export const deleteCard = async (req: Request, res: Response) => {
   const { cardId } = req.params;
   try {
-    const card = cards.find(({ id }) => id === Number(cardId));
+    const card: Card = cards.find(({ id }) => id === Number(cardId));
     if (!card) {
       return res.status(400).json({ message: `Card ID ${cardId} not found` });
     }
-    const filteredArray = cards.filter(({ id }) => id !== card.id);
+    const filteredArray: Card[] = cards.filter(({ id }) => id !== card.id);
     setCards([...filteredArray]);
     res.json(cards);
   } catch (err) {
@@ -79,10 +83,10 @@ const deleteCard = async (req, res) => {
   }
 };
 
-const getCard = async (req, res) => {
+export const getCard = async (req: Request, res: Response) => {
   const { cardId } = req.params;
   try {
-    const card = cards.find(({ id }) => id === Number(cardId));
+    const card: Card = cards.find(({ id }) => id === Number(cardId));
     if (!card) {
       return res.status(400).json({ message: `Card ID ${cardId} not found` });
     }
@@ -92,5 +96,3 @@ const getCard = async (req, res) => {
     logger.error(err);
   }
 };
-
-module.exports = { getAllCards, createCard, updateCard, deleteCard, getCard };
