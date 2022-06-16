@@ -1,0 +1,23 @@
+[
+  {
+    "id": 1,
+    "name": "first",
+    "color": "blue",
+    "description": "first board",
+    "createdAt": ""
+  },
+  {
+    "id": 2,
+    "name": "second",
+    "color": "blue",
+    "description": "second board",
+    "createdAt": ""
+  },
+  {
+    "id": 3,
+    "name": "third",
+    "color": "blue",
+    "description": "third board",
+    "createdAt": ""
+  }
+]
