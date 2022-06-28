@@ -1,10 +1,12 @@
-import { Request, Response, NextFunction } from "express";
-import express from "express";
+import dotenv from "dotenv";
+dotenv.config();
+import express, { Request, Response, NextFunction } from "express";
 const app = express();
 import helmet from "helmet";
 import cookieParser from "cookie-parser";
+import mongoose from "mongoose";
 
-import logger from "./config/logger";
+import { connectDB } from "./config/dbCon";
 import rootRouter from "./routes/rootRouter";
 import registerRouter from "./routes/registerRouter";
 import authRouter from "./routes/authRouter";
@@ -13,8 +15,11 @@ import verifyJWT from "./middleware/verifyJWT";
 import boardsRouter from "./routes/api/boardsRouter";
 import cardsRouter from "./routes/api/cardsRouter";
 import errorHandler from "./middleware/errorHandler";
+import logger from "./config/logger";
 
 const PORT = process.env.PORT || 5005;
+
+connectDB();
 
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
@@ -38,6 +43,9 @@ app.use("/api/cards", cardsRouter);
 
 app.use(errorHandler);
 
-app.listen(PORT, () => {
-  logger.info(`Server running on port ${PORT}`);
+mongoose.connection.once("open", () => {
+  logger.info("Connected to MongoDB");
+  app.listen(PORT, () => {
+    logger.info(`Server running on port ${PORT}`);
+  });
 });
