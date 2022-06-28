@@ -5,12 +5,12 @@ import path from "path";
 import bcrypt from "bcrypt";
 let users = require("../model/users.json");
 import ROLES from "../config/roles";
-import logger from "../config/logger";
 import { User } from "../types/User";
+import logger from "../config/logger";
 
 const setUsers = (data: User[]) => (users = data);
 
-const handleNewUser = async (req: Request, res: Response) => {
+export const handleNewUser = async (req: Request, res: Response) => {
   const { name, pwd } = req.body;
   const duplicate: User = users.find(({ userName }) => userName === name);
   if (duplicate)
@@ -33,5 +33,3 @@ const handleNewUser = async (req: Request, res: Response) => {
     logger.error(err);
   }
 };
-
-export default handleNewUser;

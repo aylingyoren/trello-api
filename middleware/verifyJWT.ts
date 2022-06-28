@@ -1,8 +1,6 @@
 import { Response, NextFunction, Request } from "express";
 import jwt, { JwtPayload } from "jsonwebtoken";
-import dotenv from "dotenv";
 import { Roles } from "../config/roles";
-dotenv.config();
 
 interface RequestWithParams extends Request {
   headers: {

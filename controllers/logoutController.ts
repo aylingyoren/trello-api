@@ -8,7 +8,7 @@ import logger from "../config/logger";
 
 const setUsers = (data: User[]) => (users = data);
 
-const handleLogout = async (req: Request, res: Response) => {
+export const handleLogout = async (req: Request, res: Response) => {
   try {
     const cookies = req.cookies;
     if (!cookies?.jwt) return res.sendStatus(204);
@@ -40,5 +40,3 @@ const handleLogout = async (req: Request, res: Response) => {
     logger.error(err);
   }
 };
-
-export default handleLogout;

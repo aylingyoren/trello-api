@@ -1,20 +1,18 @@
 import { Request, Response } from "express";
-import logger from "../config/logger";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import dotenv from "dotenv";
 import fs from "fs";
 const fsPromises = fs.promises;
 import path from "path";
 import { User } from "../types/User";
 import { Roles } from "../config/roles";
 let users = require("../model/users.json");
-dotenv.config();
+import logger from "../config/logger";
 
 const setUsers = (data: User[]): User[] => (users = data);
 const MAX_AGE: number = 24 * 60 * 60 * 1000;
 
-const handleLogin = async (req: Request, res: Response) => {
+export const handleLogin = async (req: Request, res: Response) => {
   try {
     const { name, pwd } = req.body;
     const foundUser: User = users.find(({ userName }) => userName === name);
@@ -56,5 +54,3 @@ const handleLogin = async (req: Request, res: Response) => {
     logger.error(err);
   }
 };
-
-export default handleLogin;

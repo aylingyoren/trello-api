@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
 import _ from "lodash";
 let cards = require("../model/cards.json");
-import logger from "../config/logger";
 import { Card } from "../types/Card";
+import logger from "../config/logger";
 
 const setCards = (data: Card[]) => (cards = data);
 
