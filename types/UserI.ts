@@ -1,6 +1,6 @@
-export interface User {
+export interface UserI {
   userName: string;
-  roles: any;
+  roles?: any;
   password: string;
   accessToken?: string;
 }

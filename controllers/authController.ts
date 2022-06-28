@@ -1,21 +1,17 @@
 import { Request, Response } from "express";
+import User from "../model/User";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import fs from "fs";
-const fsPromises = fs.promises;
-import path from "path";
-import { User } from "../types/User";
 import { Roles } from "../config/roles";
-let users = require("../model/users.json");
+import { UserI } from "../types/UserI";
 import logger from "../config/logger";
 
-const setUsers = (data: User[]): User[] => (users = data);
 const MAX_AGE: number = 24 * 60 * 60 * 1000;
 
 export const handleLogin = async (req: Request, res: Response) => {
   try {
     const { name, pwd } = req.body;
-    const foundUser: User = users.find(({ userName }) => userName === name);
+    const foundUser = await User.findOne({ userName: name }).exec();
     if (!foundUser) {
       return res.status(401).json({ message: "You need to sign up!" });
     }
@@ -32,15 +28,10 @@ export const handleLogin = async (req: Request, res: Response) => {
         process.env.ACCESS_TOKEN_SECRET,
         { expiresIn: "1d" }
       );
-      const otherUsers: User[] = users.filter(
-        ({ userName }) => userName !== foundUser.userName
-      );
-      const currentUser: User = { ...foundUser, accessToken };
-      setUsers([...otherUsers, currentUser]);
-      await fsPromises.writeFile(
-        path.join(__dirname, "..", "model", "users.json"),
-        JSON.stringify(users)
-      );
+
+      foundUser.accessToken = accessToken;
+      const result: UserI = await foundUser.save();
+
       res.cookie("jwt", accessToken, {
         httpOnly: true,
         maxAge: MAX_AGE,
