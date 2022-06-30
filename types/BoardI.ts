@@ -1,7 +1,7 @@
-export interface Board {
+export interface BoardI {
   id: number;
   name: string;
   color: string;
   description: string;
-  createdAt: string;
+  createdAt: Date;
 }

@@ -1,14 +1,12 @@
 import { Request, Response } from "express";
-import _ from "lodash";
-let boards = require("../model/board.json");
-import { Board } from "../types/Board";
+import BoardModel from "../model/Board";
 import logger from "../config/logger";
-
-const setBoards = (data: Board[]) => (boards = data);
 
 export const getAllBoards = async (req: Request, res: Response) => {
   try {
-    await res.json(boards);
+    const boards = await BoardModel.find();
+    if (!boards) return res.status(204).json({ message: "No boards found" });
+    res.json(boards);
   } catch (err) {
     res.status(500).json({ message: err.message });
     logger.error(err);
@@ -16,18 +14,16 @@ export const getAllBoards = async (req: Request, res: Response) => {
 };
 
 export const createBoard = async (req: Request, res: Response) => {
+  if (!req?.body)
+    return res.status(400).json({ message: "Board details are required." });
   try {
-    const lastBoard: Board = boards[boards.length - 1];
     const { name, color, description } = req.body;
-    const newBoard = {
-      id: _.isEmpty(boards) ? 1 : lastBoard.id + 1,
+    const result = await BoardModel.create({
       name,
       color,
       description,
-      createdAt: new Date().toISOString(),
-    };
-    setBoards([...boards, newBoard]);
-    await res.status(201).json(boards);
+    });
+    res.status(201).json(result);
   } catch (err) {
     res.status(500).json({ message: err.message });
     logger.error(err);
@@ -36,23 +32,22 @@ export const createBoard = async (req: Request, res: Response) => {
 
 export const updateBoard = async (req: Request, res: Response) => {
   const { boardId } = req.params;
+  if (!boardId)
+    return res.status(400).json({ message: "Board ID is required." });
   try {
-    const board: Board = boards.find(({ id }) => id === Number(boardId));
-    if (!board) {
-      return res.status(400).json({ message: `Board ID ${boardId} not found` });
-    }
     const { name, color, description } = req.body;
+    const board = await BoardModel.findOne({ _id: boardId }).exec();
+
+    if (!board) {
+      return res
+        .status(204)
+        .json({ message: `No board matches ID ${boardId}.` });
+    }
     if (name) board.name = name;
     if (color) board.color = color;
     if (description) board.description = description;
-    const filteredArray: Board[] = boards.filter(
-      ({ id }) => id !== Number(boardId)
-    );
-    const unsortedArray: Board[] = [...filteredArray, board];
-    setBoards(
-      unsortedArray.sort((a, b) => (a.id > b.id ? 1 : a.id < b.id ? -1 : 0))
-    );
-    res.json(boards);
+    const result = await board.save();
+    res.json(result);
   } catch (err) {
     res.status(500).json({ message: err.message });
     logger.error(err);
@@ -61,14 +56,17 @@ export const updateBoard = async (req: Request, res: Response) => {
 
 export const deleteBoard = async (req: Request, res: Response) => {
   const { boardId } = req.params;
+  if (!boardId)
+    return res.status(400).json({ message: "Board ID is required." });
   try {
-    const board: Board = boards.find(({ id }) => id === Number(boardId));
+    const board = await BoardModel.findOne({ _id: boardId }).exec();
     if (!board) {
-      return res.status(400).json({ message: `Board ID ${boardId} not found` });
+      return res
+        .status(204)
+        .json({ message: `No board matches ID ${boardId}.` });
     }
-    const filteredArray: Board[] = boards.filter(({ id }) => id !== board.id);
-    setBoards([...filteredArray]);
-    res.json(boards);
+    const result = await board.deleteOne({ _id: boardId });
+    res.json(result);
   } catch (err) {
     res.status(500).json({ message: err.message });
     logger.error(err);
@@ -77,12 +75,16 @@ export const deleteBoard = async (req: Request, res: Response) => {
 
 export const getBoard = async (req: Request, res: Response) => {
   const { boardId } = req.params;
+  if (!boardId)
+    return res.status(400).json({ message: "Board ID is required." });
   try {
-    const board: Board = boards.find(({ id }) => id === Number(boardId));
+    const board = await BoardModel.findOne({ _id: boardId }).exec();
     if (!board) {
-      return res.status(400).json({ message: `Board ID ${boardId} not found` });
+      return res
+        .status(204)
+        .json({ message: `No board matches ID ${boardId}.` });
     }
-    await res.json(board);
+    res.json(board);
   } catch (err) {
     res.status(500).json({ message: err.message });
     logger.error(err);
