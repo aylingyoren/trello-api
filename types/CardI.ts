@@ -1,11 +1,11 @@
-export interface Card {
+export interface CardI {
   id: number;
   name: string;
   description: string;
-  createdAt: string;
+  createdAt: Date;
   estimate: string;
   status: string;
-  dueDate: string;
+  dueDate: Date;
   labels: string[];
   boardId: number;
 }

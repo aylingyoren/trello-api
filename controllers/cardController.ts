@@ -1,14 +1,13 @@
 import { Request, Response } from "express";
 import _ from "lodash";
-let cards = require("../model/cards.json");
-import { Card } from "../types/Card";
+import CardModel from "../model/Card";
 import logger from "../config/logger";
-
-const setCards = (data: Card[]) => (cards = data);
 
 export const getAllCards = async (req: Request, res: Response) => {
   try {
-    await res.json(cards);
+    const cards = await CardModel.find();
+    if (!cards) return res.status(204).json({ message: "No cards found" });
+    res.json(cards);
   } catch (err) {
     res.status(500).json({ message: err.message });
     logger.error(err);
@@ -17,22 +16,22 @@ export const getAllCards = async (req: Request, res: Response) => {
 
 export const createCard = async (req: Request, res: Response) => {
   try {
-    const lastCard: Card = cards[cards.length - 1];
+    const cardsDocs = await CardModel.find();
+    const cards = Array.from(cardsDocs);
+    const lastCard = cards[cards.length - 1];
     const { name, description, estimate, status, dueDate, labels, boardId } =
       req.body;
-    const newCard = {
+    const result = await CardModel.create({
       id: _.isEmpty(cards) ? 1 : lastCard.id + 1,
       name,
       description,
-      createdAt: new Date().toISOString(),
       estimate,
       status,
       dueDate,
       labels,
-      boardId: Number(boardId),
-    };
-    setCards([...cards, newCard]);
-    await res.status(201).json(cards);
+      boardId,
+    });
+    res.status(201).json(result);
   } catch (err) {
     res.status(500).json({ message: err.message });
     logger.error(err);
@@ -41,26 +40,21 @@ export const createCard = async (req: Request, res: Response) => {
 
 export const updateCard = async (req: Request, res: Response) => {
   const { cardId } = req.params;
+  if (!cardId) return res.status(400).json({ message: "Card ID is required." });
   try {
-    const card: Card = cards.find(({ id }) => id === Number(cardId));
-    if (!card) {
-      return res.status(400).json({ message: `Card ID ${cardId} not found` });
-    }
     const { name, description, estimate, status, dueDate, labels } = req.body;
+    const card = await CardModel.findOne({ id: cardId }).exec();
+    if (!card) {
+      return res.status(204).json({ message: `No card matches ID ${cardId}` });
+    }
     if (name) card.name = name;
     if (description) card.description = description;
     if (estimate) card.estimate = estimate;
     if (status) card.status = status;
     if (dueDate) card.dueDate = dueDate;
     if (labels) card.labels = labels;
-    const filteredArray: Card[] = cards.filter(
-      ({ id }) => id !== Number(cardId)
-    );
-    const unsortedArray: Card[] = [...filteredArray, card];
-    setCards(
-      unsortedArray.sort((a, b) => (a.id > b.id ? 1 : a.id < b.id ? -1 : 0))
-    );
-    res.json(cards);
+    const result = await card.save();
+    res.json(result);
   } catch (err) {
     res.status(500).json({ message: err.message });
     logger.error(err);
@@ -69,14 +63,14 @@ export const updateCard = async (req: Request, res: Response) => {
 
 export const deleteCard = async (req: Request, res: Response) => {
   const { cardId } = req.params;
+  if (!cardId) return res.status(400).json({ message: "Card ID is required." });
   try {
-    const card: Card = cards.find(({ id }) => id === Number(cardId));
+    const card = await CardModel.findOne({ id: cardId }).exec();
     if (!card) {
-      return res.status(400).json({ message: `Card ID ${cardId} not found` });
+      return res.status(204).json({ message: `No card matches ID ${cardId}` });
     }
-    const filteredArray: Card[] = cards.filter(({ id }) => id !== card.id);
-    setCards([...filteredArray]);
-    res.json(cards);
+    const result = await card.deleteOne({ id: cardId });
+    res.json(result);
   } catch (err) {
     res.status(500).json({ message: err.message });
     logger.error(err);
@@ -85,12 +79,13 @@ export const deleteCard = async (req: Request, res: Response) => {
 
 export const getCard = async (req: Request, res: Response) => {
   const { cardId } = req.params;
+  if (!cardId) return res.status(400).json({ message: "Card ID is required." });
   try {
-    const card: Card = cards.find(({ id }) => id === Number(cardId));
+    const card = await CardModel.findOne({ id: cardId }).exec();
     if (!card) {
-      return res.status(400).json({ message: `Card ID ${cardId} not found` });
+      return res.status(204).json({ message: `No card matches ID ${cardId}` });
     }
-    await res.json(card);
+    res.json(card);
   } catch (err) {
     res.status(500).json({ message: err.message });
     logger.error(err);

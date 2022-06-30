@@ -20,7 +20,7 @@ export const CardSchema: Schema = Joi.object().keys({
   createdAt: Joi.date(),
   estimate: Joi.string().min(3).max(50).required(),
   status: Joi.string().alphanum().min(3).max(50).required(),
-  dueDate: Joi.string().required(),
+  dueDate: Joi.date(),
   labels: Joi.array().items(Joi.string().alphanum().min(3).max(50)).required(),
-  boardId: Joi.number().integer().required(),
+  boardId: Joi.string().required(),
 });
