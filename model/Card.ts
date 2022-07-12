@@ -36,4 +36,10 @@ const cardSchema = new mongoose.Schema({
   },
 });
 
-export default mongoose.model("Card", cardSchema);
+const CardModel = mongoose.model("Card", cardSchema);
+
+export const getAllCardsDB = () => CardModel.find();
+
+export const createCardDB = (card: Object) => CardModel.create(card);
+
+export const findCardDB = (card: Object) => CardModel.findOne(card).exec();

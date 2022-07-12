@@ -19,4 +19,10 @@ const boardSchema = new mongoose.Schema({
   },
 });
 
-export default mongoose.model("Board", boardSchema);
+const BoardModel = mongoose.model("Board", boardSchema);
+
+export const getAllBoardsDB = () => BoardModel.find();
+
+export const createBoardDB = (board: Object) => BoardModel.create(board);
+
+export const findBoardDB = (board: Object) => BoardModel.findOne(board).exec();

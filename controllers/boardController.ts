@@ -1,10 +1,10 @@
 import { Request, Response } from "express";
-import BoardModel from "../model/Board";
+import { getAllBoardsDB, createBoardDB, findBoardDB } from "../model/Board";
 import logger from "../config/logger";
 
 export const getAllBoards = async (req: Request, res: Response) => {
   try {
-    const boards = await BoardModel.find();
+    const boards = await getAllBoardsDB();
     if (!boards) return res.status(204).json({ message: "No boards found" });
     res.json(boards);
   } catch (err) {
@@ -18,7 +18,7 @@ export const createBoard = async (req: Request, res: Response) => {
     return res.status(400).json({ message: "Board details are required." });
   try {
     const { name, color, description } = req.body;
-    const result = await BoardModel.create({
+    const result = await createBoardDB({
       name,
       color,
       description,
@@ -36,7 +36,7 @@ export const updateBoard = async (req: Request, res: Response) => {
     return res.status(400).json({ message: "Board ID is required." });
   try {
     const { name, color, description } = req.body;
-    const board = await BoardModel.findOne({ _id: boardId }).exec();
+    const board = await findBoardDB({ _id: boardId });
 
     if (!board) {
       return res
@@ -59,7 +59,7 @@ export const deleteBoard = async (req: Request, res: Response) => {
   if (!boardId)
     return res.status(400).json({ message: "Board ID is required." });
   try {
-    const board = await BoardModel.findOne({ _id: boardId }).exec();
+    const board = await findBoardDB({ _id: boardId });
     if (!board) {
       return res
         .status(204)
@@ -78,7 +78,7 @@ export const getBoard = async (req: Request, res: Response) => {
   if (!boardId)
     return res.status(400).json({ message: "Board ID is required." });
   try {
-    const board = await BoardModel.findOne({ _id: boardId }).exec();
+    const board = await findBoardDB({ _id: boardId });
     if (!board) {
       return res
         .status(204)
