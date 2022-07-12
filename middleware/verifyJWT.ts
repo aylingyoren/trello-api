@@ -20,6 +20,7 @@ const verifyJWT = (
     req.headers.authorization || req.headers.Authorization;
   if (!authHeader?.includes("Bearer ")) return res.sendStatus(401);
   const token: string = authHeader.split(" ")[1];
+  if (!token) return res.status(401).json({ message: "No authorization." });
   jwt.verify(
     token,
     process.env.ACCESS_TOKEN_SECRET,
