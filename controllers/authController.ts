@@ -26,7 +26,7 @@ export const handleLogin = async (req: Request, res: Response) => {
           },
         },
         process.env.ACCESS_TOKEN_SECRET,
-        { expiresIn: "1d" }
+        { expiresIn: "1h" }
       );
 
       foundUser.accessToken = accessToken;
