@@ -1,12 +1,13 @@
 import { Request, Response } from "express";
-import { getAllBoardsDB, createBoardDB, findBoardDB } from "../model/Board";
+import { Database } from "../config/Database";
+import { BoardMongoDB } from "../databases/BoardMongoDB";
 import logger from "../config/logger";
+
+const dbClass = new Database(new BoardMongoDB());
 
 export const getAllBoards = async (req: Request, res: Response) => {
   try {
-    const boards = await getAllBoardsDB();
-    if (!boards) return res.status(204).json({ message: "No boards found" });
-    res.json(boards);
+    await dbClass.getAllItems(req, res);
   } catch (err) {
     res.status(500).json({ message: err.message });
     logger.error(err);
@@ -14,16 +15,8 @@ export const getAllBoards = async (req: Request, res: Response) => {
 };
 
 export const createBoard = async (req: Request, res: Response) => {
-  if (!req?.body)
-    return res.status(400).json({ message: "Board details are required." });
   try {
-    const { name, color, description } = req.body;
-    const result = await createBoardDB({
-      name,
-      color,
-      description,
-    });
-    res.status(201).json(result);
+    await dbClass.createItem(req, res);
   } catch (err) {
     res.status(500).json({ message: err.message });
     logger.error(err);
@@ -31,23 +24,8 @@ export const createBoard = async (req: Request, res: Response) => {
 };
 
 export const updateBoard = async (req: Request, res: Response) => {
-  const { boardId } = req.params;
-  if (!boardId)
-    return res.status(400).json({ message: "Board ID is required." });
   try {
-    const { name, color, description } = req.body;
-    const board = await findBoardDB({ _id: boardId });
-
-    if (!board) {
-      return res
-        .status(204)
-        .json({ message: `No board matches ID ${boardId}.` });
-    }
-    if (name) board.name = name;
-    if (color) board.color = color;
-    if (description) board.description = description;
-    const result = await board.save();
-    res.json(result);
+    await dbClass.updateItem(req, res);
   } catch (err) {
     res.status(500).json({ message: err.message });
     logger.error(err);
@@ -55,18 +33,8 @@ export const updateBoard = async (req: Request, res: Response) => {
 };
 
 export const deleteBoard = async (req: Request, res: Response) => {
-  const { boardId } = req.params;
-  if (!boardId)
-    return res.status(400).json({ message: "Board ID is required." });
   try {
-    const board = await findBoardDB({ _id: boardId });
-    if (!board) {
-      return res
-        .status(204)
-        .json({ message: `No board matches ID ${boardId}.` });
-    }
-    const result = await board.deleteOne({ _id: boardId });
-    res.json(result);
+    await dbClass.deleteItem(req, res);
   } catch (err) {
     res.status(500).json({ message: err.message });
     logger.error(err);
@@ -74,17 +42,8 @@ export const deleteBoard = async (req: Request, res: Response) => {
 };
 
 export const getBoard = async (req: Request, res: Response) => {
-  const { boardId } = req.params;
-  if (!boardId)
-    return res.status(400).json({ message: "Board ID is required." });
   try {
-    const board = await findBoardDB({ _id: boardId });
-    if (!board) {
-      return res
-        .status(204)
-        .json({ message: `No board matches ID ${boardId}.` });
-    }
-    res.json(board);
+    await dbClass.getItem(req, res);
   } catch (err) {
     res.status(500).json({ message: err.message });
     logger.error(err);

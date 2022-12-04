@@ -7,10 +7,10 @@ import {
   deleteBoard,
   getBoard,
 } from "../../controllers/boardController";
-import ROLES from "../../config/roles";
+import { ROLES } from "../../config/roles";
 import verifyRoles from "../../middleware/verifyRoles";
 import dataValidator from "../../middleware/dataValidator";
-import { BoardSchema } from "../../model/schemas";
+import { BoardSchema } from "../../databases/schemas";
 
 boardsRouter
   .route("/")

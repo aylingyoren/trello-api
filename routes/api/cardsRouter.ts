@@ -7,10 +7,10 @@ import {
   deleteCard,
   getCard,
 } from "../../controllers/cardController";
-import ROLES from "../../config/roles";
+import { ROLES } from "../../config/roles";
 import verifyRoles from "../../middleware/verifyRoles";
 import dataValidator from "../../middleware/dataValidator";
-import { CardSchema } from "../../model/schemas";
+import { CardSchema } from "../../databases/schemas";
 
 cardsRouter
   .route("/")

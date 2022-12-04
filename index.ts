@@ -6,7 +6,7 @@ import helmet from "helmet";
 import cookieParser from "cookie-parser";
 import mongoose from "mongoose";
 
-import { connectDB } from "./config/dbCon";
+import { connectDB } from "./config/mongoDBCon";
 import rootRouter from "./routes/rootRouter";
 import registerRouter from "./routes/registerRouter";
 import authRouter from "./routes/authRouter";
@@ -40,6 +40,15 @@ app.use("/logout", logoutRouter);
 app.use(verifyJWT);
 app.use("/api/boards", boardsRouter);
 app.use("/api/cards", cardsRouter);
+
+// TODO
+// switch(process.env.DATABASE){
+//   case "MONGO" :
+//    return new General()
+//   case "POSTGRES" :
+//    return new Error("implement me!")
+//   case "FILE" :
+//    return new
 
 app.use(errorHandler);
 

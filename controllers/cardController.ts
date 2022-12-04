@@ -1,13 +1,14 @@
 import { Request, Response } from "express";
 import _ from "lodash";
-import { getAllCardsDB, createCardDB, findCardDB } from "../model/Card";
+import { Database } from "../config/Database";
+import { CardMongoDB } from "../databases/CardMongoDB";
 import logger from "../config/logger";
+
+const dbClass = new Database(new CardMongoDB());
 
 export const getAllCards = async (req: Request, res: Response) => {
   try {
-    const cards = await getAllCardsDB();
-    if (!cards) return res.status(204).json({ message: "No cards found" });
-    res.json(cards);
+    await dbClass.getAllItems(req, res);
   } catch (err) {
     res.status(500).json({ message: err.message });
     logger.error(err);
@@ -16,22 +17,7 @@ export const getAllCards = async (req: Request, res: Response) => {
 
 export const createCard = async (req: Request, res: Response) => {
   try {
-    const cardsDocs = await getAllCardsDB();
-    const cards = Array.from(cardsDocs);
-    const lastCard = cards[cards.length - 1];
-    const { name, description, estimate, status, dueDate, labels, boardId } =
-      req.body;
-    const result = await createCardDB({
-      id: _.isEmpty(cards) ? 1 : lastCard.id + 1,
-      name,
-      description,
-      estimate,
-      status,
-      dueDate,
-      labels,
-      boardId,
-    });
-    res.status(201).json(result);
+    await dbClass.createItem(req, res);
   } catch (err) {
     res.status(500).json({ message: err.message });
     logger.error(err);
@@ -39,22 +25,8 @@ export const createCard = async (req: Request, res: Response) => {
 };
 
 export const updateCard = async (req: Request, res: Response) => {
-  const { cardId } = req.params;
-  if (!cardId) return res.status(400).json({ message: "Card ID is required." });
   try {
-    const { name, description, estimate, status, dueDate, labels } = req.body;
-    const card = await findCardDB({ id: cardId });
-    if (!card) {
-      return res.status(204).json({ message: `No card matches ID ${cardId}` });
-    }
-    if (name) card.name = name;
-    if (description) card.description = description;
-    if (estimate) card.estimate = estimate;
-    if (status) card.status = status;
-    if (dueDate) card.dueDate = dueDate;
-    if (labels) card.labels = labels;
-    const result = await card.save();
-    res.json(result);
+    await dbClass.updateItem(req, res);
   } catch (err) {
     res.status(500).json({ message: err.message });
     logger.error(err);
@@ -62,15 +34,8 @@ export const updateCard = async (req: Request, res: Response) => {
 };
 
 export const deleteCard = async (req: Request, res: Response) => {
-  const { cardId } = req.params;
-  if (!cardId) return res.status(400).json({ message: "Card ID is required." });
   try {
-    const card = await findCardDB({ id: cardId });
-    if (!card) {
-      return res.status(204).json({ message: `No card matches ID ${cardId}` });
-    }
-    const result = await card.deleteOne({ id: cardId });
-    res.json(result);
+    await dbClass.deleteItem(req, res);
   } catch (err) {
     res.status(500).json({ message: err.message });
     logger.error(err);
@@ -78,14 +43,8 @@ export const deleteCard = async (req: Request, res: Response) => {
 };
 
 export const getCard = async (req: Request, res: Response) => {
-  const { cardId } = req.params;
-  if (!cardId) return res.status(400).json({ message: "Card ID is required." });
   try {
-    const card = await findCardDB({ id: cardId });
-    if (!card) {
-      return res.status(204).json({ message: `No card matches ID ${cardId}` });
-    }
-    res.json(card);
+    await dbClass.getItem(req, res);
   } catch (err) {
     res.status(500).json({ message: err.message });
     logger.error(err);

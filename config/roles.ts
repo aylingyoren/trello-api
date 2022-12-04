@@ -3,9 +3,7 @@ export type Roles = {
   USER: string;
 };
 
-const ROLES: Roles = {
+export const ROLES: Roles = {
   ADMIN: "admin",
   USER: "user",
 };
-
-export default ROLES;

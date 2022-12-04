@@ -7,20 +7,20 @@ export const UserSchema: Schema = Joi.object().keys({
 
 export const BoardSchema: Schema = Joi.object().keys({
   id: Joi.number().integer(),
-  name: Joi.string().alphanum().min(3).max(50).required(),
+  name: Joi.string().min(3).max(50).required(),
   color: Joi.string().alphanum().min(3).max(100).required(),
   description: Joi.string().max(300).required(),
-  createdAt: Joi.date(),
+  created_at: Joi.date(),
 });
 
 export const CardSchema: Schema = Joi.object().keys({
   id: Joi.number().integer(),
   name: Joi.string().min(3).max(50).required(),
   description: Joi.string().max(300).required(),
-  createdAt: Joi.date(),
+  created_at: Joi.date(),
   estimate: Joi.string().min(3).max(50).required(),
-  status: Joi.string().alphanum().min(3).max(50).required(),
-  dueDate: Joi.date(),
-  labels: Joi.array().items(Joi.string().alphanum().min(3).max(50)).required(),
-  boardId: Joi.string().required(),
+  status: Joi.string().min(3).max(50).required(),
+  due_date: Joi.date(),
+  labels: Joi.array().items(Joi.string().min(3).max(50)).required(),
+  board_id: Joi.number().integer().required(),
 });
