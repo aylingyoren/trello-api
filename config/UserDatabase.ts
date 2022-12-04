@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { UserMongoDB } from "../databases/UserMongoDB";
 import { UserFileDB } from "../databases/UserFileDB";
+import { UserPG } from "../databases/UserPG";
 
 export const MAX_AGE: number = 24 * 60 * 60 * 1000;
 
@@ -11,7 +12,7 @@ export interface UserI {
   accessToken?: string;
 }
 
-type UserDBType = UserMongoDB | UserFileDB;
+type UserDBType = UserMongoDB | UserFileDB | UserPG;
 
 export class UserDatabase {
   db: UserDBType;

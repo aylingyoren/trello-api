@@ -3,8 +3,16 @@ import { BoardMongoDB } from "../databases/BoardMongoDB";
 import { CardMongoDB } from "../databases/CardMongoDB";
 import { BoardFileDB } from "../databases/BoardFileDB";
 import { CardFileDB } from "../databases/CardFileDB";
+import { BoardPG } from "../databases/BoardPG";
+import { CardPG } from "../databases/CardPG";
 
-type DBType = BoardMongoDB | BoardFileDB | CardMongoDB | CardFileDB;
+type DBType =
+  | BoardMongoDB
+  | CardMongoDB
+  | BoardFileDB
+  | CardFileDB
+  | BoardPG
+  | CardPG;
 
 export class Database {
   db: DBType;

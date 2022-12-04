@@ -1,10 +1,10 @@
 import { Request, Response } from "express";
 import _ from "lodash";
 import { Database } from "../config/Database";
-import { CardMongoDB } from "../databases/CardMongoDB";
+import { CardPG } from "../databases/CardPG";
 import logger from "../config/logger";
 
-const dbClass = new Database(new CardMongoDB());
+const dbClass = new Database(new CardPG());
 
 export const getAllCards = async (req: Request, res: Response) => {
   try {

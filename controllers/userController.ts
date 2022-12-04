@@ -1,9 +1,9 @@
 import { Request, Response } from "express";
 import { UserDatabase } from "../config/UserDatabase";
-import { UserMongoDB } from "../databases/UserMongoDB";
+import { UserPG } from "../databases/UserPG";
 import logger from "../config/logger";
 
-const dbClass = new UserDatabase(new UserMongoDB());
+const dbClass = new UserDatabase(new UserPG());
 
 export const handleNewUser = async (req: Request, res: Response) => {
   try {

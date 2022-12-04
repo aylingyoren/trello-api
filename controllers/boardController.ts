@@ -1,9 +1,9 @@
 import { Request, Response } from "express";
 import { Database } from "../config/Database";
-import { BoardMongoDB } from "../databases/BoardMongoDB";
+import { BoardPG } from "../databases/BoardPG";
 import logger from "../config/logger";
 
-const dbClass = new Database(new BoardMongoDB());
+const dbClass = new Database(new BoardPG());
 
 export const getAllBoards = async (req: Request, res: Response) => {
   try {
