@@ -52,12 +52,19 @@ export class UserPG {
 
   async regUser(req: Request, res: Response) {
     const { name, pwd } = req.body;
-    const duplicateQuery = await db.query(foundUserByNameQuery(name));
-    if (duplicateQuery)
+    const duplicateQuery = await db.query(
+      `SELECT * FROM users WHERE username = '${name}';`
+    );
+    if (duplicateQuery.rowCount) {
       return res.status(409).json({ message: `User ${name} already exists.` });
-    const hashedPwd: string = await bcrypt.hash(pwd, 10);
-    const result = await db.query(updateUserQuery, [name, hashedPwd]);
-    res.status(201).json(result.rows[0]);
+    } else {
+      const hashedPwd: string = await bcrypt.hash(pwd, 10);
+      const result = await db.query(
+        `INSERT INTO users (username, password) VALUES ($1, $2);`,
+        [name, hashedPwd]
+      );
+      res.status(201).json(result.rows[0]);
+    }
   }
 
   async logoutUser(req: Request, res: Response) {
