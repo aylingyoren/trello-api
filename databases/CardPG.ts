@@ -3,7 +3,6 @@ import { pool as db } from "../config/pgDBCon";
 import {
   createCardQuery,
   deleteCardQuery,
-  getAllCardsByBoardQuery,
   getAllCardsQuery,
   getCardQuery,
   updateCardQuery,
@@ -14,16 +13,16 @@ export class CardPG {
 
   async getAllItems(req: Request, res: Response) {
     const cards = await db.query(getAllCardsQuery);
-    if (!cards) return res.status(204).json({ message: "No cards found" });
+    if (!cards.rowCount) return res.json({ message: "No cards found" });
     res.json(cards.rows);
   }
 
   async createItem(req: Request, res: Response) {
-    if (!req?.body)
-      return res.status(400).json({ message: "Card details are required." });
     const { name, description, estimate, status, due_date, labels, board_id } =
       req.body;
-    const newCard = await db.query(createCardQuery, [
+    if (!req?.body)
+      return res.status(400).json({ message: "Card details are required." });
+    await db.query(createCardQuery, [
       name,
       description,
       estimate,
@@ -32,7 +31,9 @@ export class CardPG {
       labels,
       board_id,
     ]);
-    res.json(newCard.rows[0]);
+    res.json({
+      message: `Card with name "${name}", description "${description}", estimate "${estimate}", status "${status}", due_date "${due_date}", labels "${labels}" and board_id "${board_id}" has been created.`,
+    });
   }
 
   async updateItem(req: Request, res: Response) {
@@ -41,25 +42,25 @@ export class CardPG {
       return res.status(400).json({ message: "Card ID is required." });
     const { name, description, estimate, status, due_date, labels, board_id } =
       req.body;
-    const card = await db.query(updateCardQuery, [
+    await db.query(updateCardQuery, [
       name,
+      board_id,
       description,
       estimate,
       status,
       due_date,
       labels,
-      board_id,
       cardId,
     ]);
-    res.json(card.rows[0]);
+    res.json({ message: `Card ${cardId} has been updated.` });
   }
 
   async deleteItem(req: Request, res: Response) {
     const { cardId } = req.params;
     if (!cardId)
       return res.status(400).json({ message: "Card ID is required." });
-    const card = await db.query(deleteCardQuery, [cardId]);
-    res.json(card.rows[0]);
+    await db.query(deleteCardQuery, [cardId]);
+    res.json({ message: `Card ${cardId} has been deleted.` });
   }
 
   async getItem(req: Request, res: Response) {
