@@ -26,5 +26,9 @@ create TABLE users(
   id SERIAL PRIMARY KEY,
   username VARCHAR(50) NOT NULL,
   password VARCHAR(150) NOT NULL,
+  roles TEXT[],
   accesstoken VARCHAR(250)
 );
+
+UPDATE users SET roles[0] = 'user' WHERE username = '...';
+UPDATE users SET roles[1] = 'admin' WHERE username = '...';

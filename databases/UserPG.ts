@@ -7,10 +7,11 @@ import { MAX_AGE } from "../config/UserDatabase";
 import {
   foundUserByAccessTokenQuery,
   foundUserByNameQuery,
+  updateAccessTokenQuery,
   updateUserQuery,
+  updateAccessTokenQueryToNull,
 } from "../helpers/pgUserQueries";
 
-// FINISH
 export class UserPG {
   constructor() {}
 
@@ -18,28 +19,27 @@ export class UserPG {
 
   async authUser(req: Request, res: Response) {
     const { name, pwd } = req.body;
+
     const foundUserQuery = await db.query(foundUserByNameQuery(name));
-    if (!foundUserQuery) {
+
+    if (!foundUserQuery.rowCount) {
       return res.status(401).json({ message: "You need to sign up!" });
     }
     const foundUser = foundUserQuery.rows[0];
     const match: boolean = await bcrypt.compare(pwd, foundUser.password);
     if (match) {
-      const roles: Roles[] = Object.values(foundUser.roles);
+      const roles: Roles[] = foundUser.roles;
       const accessToken: string = jwt.sign(
         {
           userInfo: {
-            userName: foundUser.userName,
+            username: foundUser.username,
             roles,
           },
         },
         process.env.ACCESS_TOKEN_SECRET,
         { expiresIn: "1h" }
       );
-
-      const updatedUserQuery = await db.query(
-        `UPDATE users SET accessToken = ${accessToken} WHERE userName = ${name}`
-      );
+      await db.query(updateAccessTokenQuery(accessToken, name));
       res.cookie("jwt", accessToken, {
         httpOnly: true,
         maxAge: MAX_AGE,
@@ -52,18 +52,13 @@ export class UserPG {
 
   async regUser(req: Request, res: Response) {
     const { name, pwd } = req.body;
-    const duplicateQuery = await db.query(
-      `SELECT * FROM users WHERE username = '${name}';`
-    );
+    const duplicateQuery = await db.query(foundUserByNameQuery(name));
     if (duplicateQuery.rowCount) {
       return res.status(409).json({ message: `User ${name} already exists.` });
     } else {
       const hashedPwd: string = await bcrypt.hash(pwd, 10);
-      const result = await db.query(
-        `INSERT INTO users (username, password) VALUES ($1, $2);`,
-        [name, hashedPwd]
-      );
-      res.status(201).json(result.rows[0]);
+      const result = await db.query(updateUserQuery, [name, hashedPwd]);
+      res.status(201).json(result.rows[0]); // ?
     }
   }
 
@@ -79,16 +74,13 @@ export class UserPG {
         httpOnly: true,
         maxAge: MAX_AGE,
       });
-      res.status(204).json({ message: "You are logged out." });
+      res.json({ message: "You are logged out." });
     }
-    const updatedUserQuery = await db.query(
-      `UPDATE users SET accessToken = null WHERE accessToken = ${accessToken}`
-    );
-
+    await db.query(updateAccessTokenQueryToNull(accessToken));
     res.clearCookie("jwt", {
       httpOnly: true,
       maxAge: MAX_AGE,
     });
-    res.status(204).json({ message: "You are logged out." });
+    res.json({ message: "You are logged out." });
   }
 }
