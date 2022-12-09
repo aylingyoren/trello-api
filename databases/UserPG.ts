@@ -20,7 +20,7 @@ export class UserPG {
   async authUser(req: Request, res: Response) {
     const { name, pwd } = req.body;
 
-    const foundUserQuery = await db.query(foundUserByNameQuery(name));
+    const foundUserQuery = await db.query(foundUserByNameQuery, [name]);
 
     if (!foundUserQuery.rowCount) {
       return res.status(401).json({ message: "You need to sign up!" });
@@ -39,7 +39,7 @@ export class UserPG {
         process.env.ACCESS_TOKEN_SECRET,
         { expiresIn: "1h" }
       );
-      await db.query(updateAccessTokenQuery(accessToken, name));
+      await db.query(updateAccessTokenQuery, [accessToken, name]);
       res.cookie("jwt", accessToken, {
         httpOnly: true,
         maxAge: MAX_AGE,
@@ -52,7 +52,7 @@ export class UserPG {
 
   async regUser(req: Request, res: Response) {
     const { name, pwd } = req.body;
-    const duplicateQuery = await db.query(foundUserByNameQuery(name));
+    const duplicateQuery = await db.query(foundUserByNameQuery, [name]);
     if (duplicateQuery.rowCount) {
       return res.status(409).json({ message: `User ${name} already exists.` });
     } else {
@@ -66,9 +66,9 @@ export class UserPG {
     const cookies = req.cookies;
     if (!cookies?.jwt) return res.sendStatus(204);
     const accessToken: string = cookies.jwt;
-    const foundUserQuery = await db.query(
-      foundUserByAccessTokenQuery(accessToken)
-    );
+    const foundUserQuery = await db.query(foundUserByAccessTokenQuery, [
+      accessToken,
+    ]);
     if (!foundUserQuery) {
       res.clearCookie("jwt", {
         httpOnly: true,
@@ -76,7 +76,7 @@ export class UserPG {
       });
       res.json({ message: "You are logged out." });
     }
-    await db.query(updateAccessTokenQueryToNull(accessToken));
+    await db.query(updateAccessTokenQueryToNull, [accessToken]);
     res.clearCookie("jwt", {
       httpOnly: true,
       maxAge: MAX_AGE,

@@ -1,14 +1,10 @@
-export const foundUserByNameQuery = (name: string) =>
-  `SELECT * FROM users WHERE username = '${name}';`;
+export const foundUserByNameQuery = `SELECT * FROM users WHERE username = $1;`;
 
 export const updateUserQuery =
   "INSERT INTO users (username, password) values ($1, $2);";
 
-export const foundUserByAccessTokenQuery = (accessToken: string) =>
-  `SELECT * FROM users WHERE accesstoken = '${accessToken}';`;
+export const foundUserByAccessTokenQuery = `SELECT * FROM users WHERE accesstoken = $1;`;
 
-export const updateAccessTokenQuery = (accessToken: string, name: string) =>
-  `UPDATE users SET accesstoken = '${accessToken}' WHERE username = '${name}';`;
+export const updateAccessTokenQuery = `UPDATE users SET accesstoken = $1 WHERE username = $2;`;
 
-export const updateAccessTokenQueryToNull = (accessToken: string) =>
-  `UPDATE users SET accesstoken = null WHERE accesstoken = '${accessToken}';`;
+export const updateAccessTokenQueryToNull = `UPDATE users SET accesstoken = null WHERE accesstoken = $1;`;
