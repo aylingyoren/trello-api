@@ -3,7 +3,8 @@ import { UserMongoDB } from "../databases/UserMongoDB";
 import { UserFileDB } from "../databases/UserFileDB";
 import { UserPG } from "../databases/UserPG";
 
-export const MAX_AGE: number = 24 * 60 * 60 * 1000;
+const MAX_AGE: number = 24 * 60 * 60 * 1000;
+export const cookieConfig = { httpOnly: true, maxAge: MAX_AGE };
 
 export interface UserI {
   userName: string;

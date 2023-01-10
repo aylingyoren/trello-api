@@ -3,7 +3,7 @@ import { pool as db } from "../config/pgDBCon";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { Roles } from "../config/roles";
-import { MAX_AGE } from "../config/UserDatabase";
+import { cookieConfig } from "../config/UserDatabase";
 import {
   foundUserByAccessTokenQuery,
   foundUserByNameQuery,
@@ -40,10 +40,7 @@ export class UserPG {
         { expiresIn: "1h" }
       );
       await db.query(updateAccessTokenQuery, [accessToken, name]);
-      res.cookie("jwt", accessToken, {
-        httpOnly: true,
-        maxAge: MAX_AGE,
-      });
+      res.cookie("jwt", accessToken, cookieConfig);
       res.json({ accessToken });
     } else {
       res.status(401).json({ message: "Wrong password" });
@@ -70,17 +67,11 @@ export class UserPG {
       accessToken,
     ]);
     if (!foundUserQuery) {
-      res.clearCookie("jwt", {
-        httpOnly: true,
-        maxAge: MAX_AGE,
-      });
+      res.clearCookie("jwt", cookieConfig);
       res.json({ message: "You are logged out." });
     }
     await db.query(updateAccessTokenQueryToNull, [accessToken]);
-    res.clearCookie("jwt", {
-      httpOnly: true,
-      maxAge: MAX_AGE,
-    });
+    res.clearCookie("jwt", cookieConfig);
     res.json({ message: "You are logged out." });
   }
 }

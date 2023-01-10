@@ -5,7 +5,7 @@ import fs from "fs";
 const fsPromises = fs.promises;
 import path from "path";
 import { ROLES, Roles } from "../config/roles";
-import { MAX_AGE, UserI } from "../config/UserDatabase";
+import { cookieConfig, UserI } from "../config/UserDatabase";
 
 let users = require("./mockDB/usersDB.json");
 const setUsers = (data: UserI[]): UserI[] => (users = data);
@@ -39,10 +39,7 @@ export class UserFileDB {
         path.join(__dirname, "mockDB", "usersDB.json"),
         JSON.stringify(users)
       );
-      res.cookie("jwt", accessToken, {
-        httpOnly: true,
-        maxAge: MAX_AGE,
-      });
+      res.cookie("jwt", accessToken, cookieConfig);
       res.json({ accessToken });
     } else {
       res.status(401).json({ message: "Wrong password" });
@@ -74,10 +71,7 @@ export class UserFileDB {
     const accessToken: string = cookies.jwt;
     const foundUser: UserI = users.find((p) => p.accessToken === accessToken);
     if (!foundUser) {
-      res.clearCookie("jwt", {
-        httpOnly: true,
-        maxAge: MAX_AGE,
-      });
+      res.clearCookie("jwt", cookieConfig);
       return res.status(204).json({ message: "You are logged out." });
     }
     const otherUsers: UserI[] = users.filter(
@@ -89,10 +83,7 @@ export class UserFileDB {
       path.join(__dirname, "mockDB", "usersDB.json"),
       JSON.stringify(users)
     );
-    res.clearCookie("jwt", {
-      httpOnly: true,
-      maxAge: MAX_AGE,
-    });
+    res.clearCookie("jwt", cookieConfig);
     res.status(204).json({ message: "You are logged out." });
   }
 }

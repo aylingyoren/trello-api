@@ -3,8 +3,7 @@ import mongoose, { Schema } from "mongoose";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { Roles } from "../config/roles";
-import { UserI } from "../config/UserDatabase";
-import { MAX_AGE } from "../config/UserDatabase";
+import { cookieConfig, UserI } from "../config/UserDatabase";
 
 const userSchema = new Schema({
   userName: {
@@ -55,10 +54,7 @@ export class UserMongoDB {
       foundUser.accessToken = accessToken;
       const result: UserI = await foundUser.save();
 
-      res.cookie("jwt", accessToken, {
-        httpOnly: true,
-        maxAge: MAX_AGE,
-      });
+      res.cookie("jwt", accessToken, cookieConfig);
       res.json({ accessToken });
     } else {
       res.status(401).json({ message: "Wrong password" });
@@ -84,20 +80,14 @@ export class UserMongoDB {
     const accessToken: string = cookies.jwt;
     const foundUser = await this.findUser({ accessToken });
     if (!foundUser) {
-      res.clearCookie("jwt", {
-        httpOnly: true,
-        maxAge: MAX_AGE,
-      });
+      res.clearCookie("jwt", cookieConfig);
       res.status(204).json({ message: "You are logged out." });
     }
 
     foundUser.accessToken = "";
     const result: UserI = await foundUser.save();
 
-    res.clearCookie("jwt", {
-      httpOnly: true,
-      maxAge: MAX_AGE,
-    });
+    res.clearCookie("jwt", cookieConfig);
     res.status(204).json({ message: "You are logged out." });
   }
 }
