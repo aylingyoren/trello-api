@@ -21,6 +21,10 @@ export class UserDatabase {
     this.db = db;
   }
 
+  findUserByToken(token: string) {
+    return this.db.findUserByToken(token);
+  }
+
   authUser(req: Request, res: Response) {
     return this.db.authUser(req, res);
   }

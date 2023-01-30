@@ -31,6 +31,9 @@ export class UserMongoDB {
   async findUser(user: Object) {
     return await UserModel.findOne(user).exec();
   }
+  async findUserByToken(token: string) {
+    return await this.findUser({ accessToken: token });
+  }
   async authUser(req: Request, res: Response) {
     const { name, pwd } = req.body;
     const foundUser = await this.findUser({ userName: name });
@@ -76,7 +79,8 @@ export class UserMongoDB {
 
   async logoutUser(req: Request, res: Response) {
     const cookies = req.cookies;
-    if (!cookies?.jwt) return res.sendStatus(204);
+    if (!cookies?.jwt)
+      return res.status(400).json({ message: "No cookie found." });
     const accessToken: string = cookies.jwt;
     const foundUser = await this.findUser({ accessToken });
     if (!foundUser) {
@@ -86,7 +90,6 @@ export class UserMongoDB {
 
     foundUser.accessToken = "";
     const result: UserI = await foundUser.save();
-
     res.clearCookie("jwt", cookieConfig);
     res.status(204).json({ message: "You are logged out." });
   }

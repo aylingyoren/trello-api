@@ -11,6 +11,9 @@ let users = require("./mockDB/usersDB.json");
 const setUsers = (data: UserI[]): UserI[] => (users = data);
 
 export class UserFileDB {
+  async findUserByToken(token: string) {
+    return users.find(({ accessToken }: UserI) => accessToken === token);
+  }
   async authUser(req: Request, res: Response) {
     const { name, pwd } = req.body;
     const foundUser: UserI = users.find(({ userName }) => userName === name);
@@ -67,7 +70,8 @@ export class UserFileDB {
 
   async logoutUser(req: Request, res: Response) {
     const cookies = req.cookies;
-    if (!cookies?.jwt) return res.sendStatus(204);
+    if (!cookies?.jwt)
+      return res.status(400).json({ message: "No cookie found." });
     const accessToken: string = cookies.jwt;
     const foundUser: UserI = users.find((p) => p.accessToken === accessToken);
     if (!foundUser) {

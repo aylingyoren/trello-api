@@ -15,7 +15,10 @@ import {
 export class UserPG {
   constructor() {}
 
-  async findUser() {}
+  async findUserByToken(token: string) {
+    const foundUserQuery = await db.query(foundUserByAccessTokenQuery, [token]);
+    return foundUserQuery.rows[0];
+  }
 
   async authUser(req: Request, res: Response) {
     const { name, pwd } = req.body;
@@ -61,7 +64,8 @@ export class UserPG {
 
   async logoutUser(req: Request, res: Response) {
     const cookies = req.cookies;
-    if (!cookies?.jwt) return res.sendStatus(204);
+    if (!cookies?.jwt)
+      return res.status(400).json({ message: "No cookie found." });
     const accessToken: string = cookies.jwt;
     const foundUserQuery = await db.query(foundUserByAccessTokenQuery, [
       accessToken,

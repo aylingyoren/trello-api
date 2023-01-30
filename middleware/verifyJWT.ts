@@ -1,13 +1,16 @@
 import { Response, NextFunction, Request } from "express";
 import jwt, { JwtPayload } from "jsonwebtoken";
+import { UserDatabase } from "../config/UserDatabase";
+import { UserPG } from "../databases/UserPG";
 import { Roles } from "../config/roles";
+
+const dbClass = new UserDatabase(new UserPG());
 
 interface RequestWithParams extends Request {
   headers: {
     authorization?: string;
     Authorization?: string;
   };
-  name: string;
   roles: Roles[];
 }
 
@@ -24,10 +27,11 @@ const verifyJWT = (
   jwt.verify(
     token,
     process.env.ACCESS_TOKEN_SECRET,
-    (err, decoded: JwtPayload) => {
+    async (err, decoded: JwtPayload) => {
       if (err) return res.sendStatus(403);
-      const { name, roles } = decoded.userInfo;
-      req.name = name;
+      const { roles } = decoded.userInfo;
+      const user = await dbClass.findUserByToken(token);
+      if (!user) return res.status(403).json({ message: "Please log in." });
       req.roles = roles;
       next();
     }
