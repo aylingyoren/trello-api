@@ -88,6 +88,6 @@ export class UserFileDB {
       JSON.stringify(users)
     );
     res.clearCookie("jwt", cookieConfig);
-    res.status(204).json({ message: "You are logged out." });
+    res.json({ message: "You are logged out." });
   }
 }
