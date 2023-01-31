@@ -1,13 +1,10 @@
 import { Request, Response } from "express";
-import { Database } from "../config/Database";
-import { BoardPG } from "../databases/BoardPG";
+import { boardDbClass } from "../index";
 import logger from "../config/logger";
-
-const dbClass = new Database(new BoardPG());
 
 export const getAllBoards = async (req: Request, res: Response) => {
   try {
-    await dbClass.getAllItems(req, res);
+    await boardDbClass.getAllItems(req, res);
   } catch (err) {
     res.status(500).json({ message: err.message });
     logger.error(err);
@@ -16,7 +13,7 @@ export const getAllBoards = async (req: Request, res: Response) => {
 
 export const createBoard = async (req: Request, res: Response) => {
   try {
-    await dbClass.createItem(req, res);
+    await boardDbClass.createItem(req, res);
   } catch (err) {
     res.status(500).json({ message: err.message });
     logger.error(err);
@@ -25,7 +22,7 @@ export const createBoard = async (req: Request, res: Response) => {
 
 export const updateBoard = async (req: Request, res: Response) => {
   try {
-    await dbClass.updateItem(req, res);
+    await boardDbClass.updateItem(req, res);
   } catch (err) {
     res.status(500).json({ message: err.message });
     logger.error(err);
@@ -34,7 +31,7 @@ export const updateBoard = async (req: Request, res: Response) => {
 
 export const deleteBoard = async (req: Request, res: Response) => {
   try {
-    await dbClass.deleteItem(req, res);
+    await boardDbClass.deleteItem(req, res);
   } catch (err) {
     res.status(500).json({ message: err.message });
     logger.error(err);
@@ -43,7 +40,7 @@ export const deleteBoard = async (req: Request, res: Response) => {
 
 export const getBoard = async (req: Request, res: Response) => {
   try {
-    await dbClass.getItem(req, res);
+    await boardDbClass.getItem(req, res);
   } catch (err) {
     res.status(500).json({ message: err.message });
     logger.error(err);

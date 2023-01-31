@@ -7,6 +7,11 @@ import cookieParser from "cookie-parser";
 import mongoose from "mongoose";
 
 import { connectDB } from "./config/mongoDBCon";
+import { UserDatabase } from "./config/UserDatabase";
+import { Database } from "./config/Database";
+import { UserMongoDB } from "./databases/UserMongoDB";
+import { BoardMongoDB } from "./databases/BoardMongoDB";
+import { CardMongoDB } from "./databases/CardMongoDB";
 import rootRouter from "./routes/rootRouter";
 import registerRouter from "./routes/registerRouter";
 import authRouter from "./routes/authRouter";
@@ -18,6 +23,10 @@ import errorHandler from "./middleware/errorHandler";
 import logger from "./config/logger";
 
 const PORT = process.env.PORT || 5005;
+
+export const userDbClass = new UserDatabase(new UserMongoDB());
+export const boardDbClass = new Database(new BoardMongoDB());
+export const cardDbClass = new Database(new CardMongoDB());
 
 connectDB();
 
@@ -31,6 +40,15 @@ app.use((req: Request, res: Response, next: NextFunction) => {
   logger.info(`${req.method} ${req.path}`);
   next();
 });
+
+// app.use((req: Request, res: Response, next: NextFunction) => {
+//   res.header("Access-Control-Allow-Origin", "http://localhost:3000");
+//   res.header(
+//     "Access-Control-Allow-Headers",
+//     "Origin, X-Requested-With, Content-Type, Accept"
+//   );
+//   next();
+// });
 
 app.use("/", rootRouter);
 app.use("/register", registerRouter);

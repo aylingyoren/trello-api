@@ -1,10 +1,7 @@
 import { Response, NextFunction, Request } from "express";
 import jwt, { JwtPayload } from "jsonwebtoken";
-import { UserDatabase } from "../config/UserDatabase";
-import { UserPG } from "../databases/UserPG";
+import { userDbClass } from "../index";
 import { Roles } from "../config/roles";
-
-const dbClass = new UserDatabase(new UserPG());
 
 interface RequestWithParams extends Request {
   headers: {
@@ -30,7 +27,7 @@ const verifyJWT = (
     async (err, decoded: JwtPayload) => {
       if (err) return res.sendStatus(403);
       const { roles } = decoded.userInfo;
-      const user = await dbClass.findUserByToken(token);
+      const user = await userDbClass.findUserByToken(token);
       if (!user) return res.status(403).json({ message: "Please log in." });
       req.roles = roles;
       next();
