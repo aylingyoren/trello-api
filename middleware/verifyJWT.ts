@@ -1,6 +1,6 @@
 import { Response, NextFunction, Request } from "express";
 import jwt, { JwtPayload } from "jsonwebtoken";
-import { userDbClass } from "../index";
+import { userDbClass } from "../config/dbClasses";
 import { Roles } from "../config/roles";
 
 interface RequestWithParams extends Request {

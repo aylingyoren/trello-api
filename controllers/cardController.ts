@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import _ from "lodash";
-import { cardDbClass } from "../index";
+import { cardDbClass } from "../config/dbClasses";
 import logger from "../config/logger";
 
 export const getAllCards = async (req: Request, res: Response) => {

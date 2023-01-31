@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { boardDbClass } from "../index";
+import { boardDbClass } from "../config/dbClasses";
 import logger from "../config/logger";
 
 export const getAllBoards = async (req: Request, res: Response) => {

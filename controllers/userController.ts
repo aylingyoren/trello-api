@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { userDbClass } from "../index";
+import { userDbClass } from "../config/dbClasses";
 import logger from "../config/logger";
 
 export const handleNewUser = async (req: Request, res: Response) => {
