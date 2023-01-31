@@ -6,7 +6,7 @@ import { CardFileDB } from "../databases/CardFileDB";
 import { BoardPG } from "../databases/BoardPG";
 import { CardPG } from "../databases/CardPG";
 
-type DBType =
+export type DBType =
   | BoardMongoDB
   | CardMongoDB
   | BoardFileDB

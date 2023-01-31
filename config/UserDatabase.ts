@@ -13,7 +13,7 @@ export interface UserI {
   accessToken?: string;
 }
 
-type UserDBType = UserMongoDB | UserFileDB | UserPG;
+export type UserDBType = UserMongoDB | UserFileDB | UserPG;
 
 export class UserDatabase {
   db: UserDBType;
