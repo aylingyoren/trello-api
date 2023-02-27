@@ -3,6 +3,7 @@ dotenv.config();
 import express, { Request, Response, NextFunction } from "express";
 const app = express();
 import helmet from "helmet";
+import { sequelize } from "./databases/pgIndex";
 import cookieParser from "cookie-parser";
 import mongoose from "mongoose";
 
@@ -40,6 +41,10 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 //   );
 //   next();
 // });
+
+sequelize.sync().then(() => {
+  console.log("db has been synced");
+});
 
 app.use("/", rootRouter);
 app.use("/register", registerRouter);

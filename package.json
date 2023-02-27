@@ -26,6 +26,8 @@
     "lodash": "^4.17.21",
     "mongoose": "^6.4.1",
     "pg": "^8.7.3",
+    "pg-hstore": "^2.3.4",
+    "sequelize": "^6.29.0",
     "winston": "^3.7.2"
   },
   "devDependencies": {
@@ -38,6 +40,7 @@
     "@types/mongoose": "^5.11.97",
     "@types/node": "^18.0.0",
     "@types/pg": "^8.6.5",
+    "@types/sequelize": "^4.28.14",
     "@types/winston": "^2.4.4",
     "concurrently": "^7.2.2",
     "cross-env": "^7.0.3",

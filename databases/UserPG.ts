@@ -1,37 +1,26 @@
 import { Request, Response } from "express";
-import { pool as db } from "../config/pgDBCon";
+import User, { UserMap } from "./pgUserModel";
+import { sequelize } from "./pgIndex";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { Roles } from "../config/roles";
 import { cookieConfig } from "../config/UserDatabase";
-import {
-  foundUserByAccessTokenQuery,
-  foundUserByNameQuery,
-  updateAccessTokenQuery,
-  updateUserQuery,
-  updateAccessTokenQueryToNull,
-} from "../helpers/pgUserQueries";
 
 export class UserPG {
   constructor() {}
 
-  async findUserByToken(token: string) {
-    const foundUserQuery = await db.query(foundUserByAccessTokenQuery, [token]);
-    return foundUserQuery.rows[0];
-  }
+  async findUserByToken() {}
 
   async authUser(req: Request, res: Response) {
     const { name, pwd } = req.body;
+    UserMap(sequelize);
+    const foundUser = await User.findOne({ where: { username: name } });
 
-    const foundUserQuery = await db.query(foundUserByNameQuery, [name]);
-
-    if (!foundUserQuery.rowCount) {
+    if (!foundUser) {
       return res.status(401).json({ message: "You need to sign up!" });
     }
-    const foundUser = foundUserQuery.rows[0];
     const match: boolean = await bcrypt.compare(pwd, foundUser.password);
     if (match) {
-      const roles: Roles[] = foundUser.roles;
+      const roles = foundUser.roles;
       const accessToken: string = jwt.sign(
         {
           userInfo: {
@@ -42,7 +31,10 @@ export class UserPG {
         process.env.ACCESS_TOKEN_SECRET,
         { expiresIn: "1h" }
       );
-      await db.query(updateAccessTokenQuery, [accessToken, name]);
+      await User.update(
+        { accesstoken: accessToken },
+        { where: { username: name } }
+      );
       res.cookie("jwt", accessToken, cookieConfig);
       res.json({ accessToken });
     } else {
@@ -52,13 +44,16 @@ export class UserPG {
 
   async regUser(req: Request, res: Response) {
     const { name, pwd } = req.body;
-    const duplicateQuery = await db.query(foundUserByNameQuery, [name]);
-    if (duplicateQuery.rowCount) {
+    UserMap(sequelize);
+    const duplicate = await User.findOne({ where: { username: name } });
+    if (duplicate) {
       return res.status(409).json({ message: `User ${name} already exists.` });
     } else {
       const hashedPwd: string = await bcrypt.hash(pwd, 10);
-      const result = await db.query(updateUserQuery, [name, hashedPwd]);
-      res.status(201).json(result.rows[0]); // ?
+      await User.create({ username: name, password: hashedPwd });
+      res
+        .status(201)
+        .json({ message: `User ${name} has been successfully created.` });
     }
   }
 
@@ -67,14 +62,17 @@ export class UserPG {
     if (!cookies?.jwt)
       return res.status(400).json({ message: "No cookie found." });
     const accessToken: string = cookies.jwt;
-    const foundUserQuery = await db.query(foundUserByAccessTokenQuery, [
-      accessToken,
-    ]);
-    if (!foundUserQuery) {
+    const foundUser = await User.findOne({
+      where: { accesstoken: accessToken },
+    });
+    if (!foundUser) {
       res.clearCookie("jwt", cookieConfig);
       res.json({ message: "You are logged out." });
     }
-    await db.query(updateAccessTokenQueryToNull, [accessToken]);
+    await User.update(
+      { accesstoken: "" },
+      { where: { accesstoken: accessToken } }
+    );
     res.clearCookie("jwt", cookieConfig);
     res.json({ message: "You are logged out." });
   }
