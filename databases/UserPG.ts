@@ -8,7 +8,10 @@ import { cookieConfig } from "../config/UserDatabase";
 export class UserPG {
   constructor() {}
 
-  async findUserByToken() {}
+  async findUserByToken(token: string) {
+    UserMap(sequelize);
+    return await User.findOne({ where: { accesstoken: token } });
+  }
 
   async authUser(req: Request, res: Response) {
     const { name, pwd } = req.body;

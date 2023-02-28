@@ -2,7 +2,7 @@ import { Model, Sequelize, DataTypes } from "sequelize";
 
 export default class User extends Model {
   public id!: number;
-  public username!: Date;
+  public username!: string;
   public password!: string;
   public roles!: string[];
   public accesstoken!: string;
