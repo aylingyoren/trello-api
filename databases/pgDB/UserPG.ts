@@ -1,9 +1,9 @@
 import { Request, Response } from "express";
-import User, { UserMap } from "./pgUserModel";
-import { sequelize } from "./pgIndex";
+import User, { UserMap } from "./model/pgUserModel";
+import { sequelize } from "./model/pgIndex";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { cookieConfig } from "../config/UserDatabase";
+import { cookieConfig } from "../../config/UserDatabase";
 
 export class UserPG {
   constructor() {}

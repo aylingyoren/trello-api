@@ -1,10 +1,10 @@
 import { Request, Response } from "express";
-import { BoardMongoDB } from "../databases/BoardMongoDB";
-import { CardMongoDB } from "../databases/CardMongoDB";
-import { BoardFileDB } from "../databases/BoardFileDB";
-import { CardFileDB } from "../databases/CardFileDB";
-import { BoardPG } from "../databases/BoardPG";
-import { CardPG } from "../databases/CardPG";
+import { BoardMongoDB } from "../databases/mongoDB/BoardMongoDB";
+import { CardMongoDB } from "../databases/mongoDB/CardMongoDB";
+import { BoardFileDB } from "../databases/fileDB/BoardFileDB";
+import { CardFileDB } from "../databases/fileDB/CardFileDB";
+import { BoardPG } from "../databases/pgDB/BoardPG";
+import { CardPG } from "../databases/pgDB/CardPG";
 
 export type DBType =
   | BoardMongoDB

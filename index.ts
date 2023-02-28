@@ -3,7 +3,7 @@ dotenv.config();
 import express, { Request, Response, NextFunction } from "express";
 const app = express();
 import helmet from "helmet";
-import { sequelize } from "./databases/pgIndex";
+import { sequelize } from "./databases/pgDB/model/pgIndex";
 import cookieParser from "cookie-parser";
 import mongoose from "mongoose";
 

@@ -1,28 +1,24 @@
 import { Request, Response } from "express";
-import { pool as db } from "../config/pgDBCon";
-import {
-  createCardQuery,
-  deleteCardQuery,
-  getAllCardsQuery,
-  getCardQuery,
-  updateCardQuery,
-} from "../helpers/pgCardQueries";
+import Card, { CardMap } from "./model/pgCardModel";
+import { sequelize } from "./model/pgIndex";
 
 export class CardPG {
   constructor() {}
 
   async getAllItems(req: Request, res: Response) {
-    const cards = await db.query(getAllCardsQuery);
-    if (!cards.rowCount) return res.json({ message: "No cards found" });
-    res.json(cards.rows);
+    CardMap(sequelize);
+    const cards = await Card.findAll();
+    if (cards.length <= 0) return res.json({ message: "No cards found" });
+    res.json(cards);
   }
 
   async createItem(req: Request, res: Response) {
     const { name, description, estimate, status, due_date, labels, board_id } =
       req.body;
+    CardMap(sequelize);
     if (!req?.body)
       return res.status(400).json({ message: "Card details are required." });
-    await db.query(createCardQuery, [
+    await Card.create({
       name,
       description,
       estimate,
@@ -30,45 +26,43 @@ export class CardPG {
       due_date,
       labels,
       board_id,
-    ]);
+    });
     res.json({
-      message: `Card with name "${name}", description "${description}", estimate "${estimate}", status "${status}", due_date "${due_date}", labels "${labels}" and board_id "${board_id}" has been created.`,
+      message: `Card with name "${name}" has been created.`,
     });
   }
 
   async updateItem(req: Request, res: Response) {
     const { cardId } = req.params;
+    CardMap(sequelize);
     if (!cardId)
       return res.status(400).json({ message: "Card ID is required." });
     const { name, description, estimate, status, due_date, labels, board_id } =
       req.body;
-    await db.query(updateCardQuery, [
-      name,
-      board_id,
-      description,
-      estimate,
-      status,
-      due_date,
-      labels,
-      cardId,
-    ]);
+    await Card.update(
+      { name, description, estimate, status, due_date, labels, board_id },
+      { where: { id: cardId } }
+    );
     res.json({ message: `Card ${cardId} has been updated.` });
   }
 
   async deleteItem(req: Request, res: Response) {
     const { cardId } = req.params;
+    CardMap(sequelize);
     if (!cardId)
       return res.status(400).json({ message: "Card ID is required." });
-    await db.query(deleteCardQuery, [cardId]);
+    await Card.destroy({ where: { id: cardId } });
     res.json({ message: `Card ${cardId} has been deleted.` });
   }
 
   async getItem(req: Request, res: Response) {
     const { cardId } = req.params;
+    CardMap(sequelize);
     if (!cardId)
       return res.status(400).json({ message: "Card ID is required." });
-    const card = await db.query(getCardQuery, [cardId]);
-    res.json(card.rows[0]);
+    const card = await Card.findOne({ where: { id: cardId } });
+    if (!card) return res.json({ message: `No card with id ${cardId} found.` });
+    res.json(card);
   }
   // TODO
   // async getItemsByItem(req: Request, res: Response) {

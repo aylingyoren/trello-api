@@ -2,8 +2,8 @@ import { Request, Response } from "express";
 import mongoose, { Schema } from "mongoose";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { Roles } from "../config/roles";
-import { cookieConfig, UserI } from "../config/UserDatabase";
+import { Roles } from "../../config/roles";
+import { cookieConfig, UserI } from "../../config/UserDatabase";
 
 const userSchema = new Schema({
   userName: {

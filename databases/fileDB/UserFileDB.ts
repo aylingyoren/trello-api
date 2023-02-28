@@ -4,8 +4,8 @@ import jwt from "jsonwebtoken";
 import fs from "fs";
 const fsPromises = fs.promises;
 import path from "path";
-import { ROLES, Roles } from "../config/roles";
-import { cookieConfig, UserI } from "../config/UserDatabase";
+import { ROLES, Roles } from "../../config/roles";
+import { cookieConfig, UserI } from "../../config/UserDatabase";
 
 let users = require("./mockDB/usersDB.json");
 const setUsers = (data: UserI[]): UserI[] => (users = data);
@@ -14,6 +14,7 @@ export class UserFileDB {
   async findUserByToken(token: string) {
     return users.find(({ accessToken }: UserI) => accessToken === token);
   }
+
   async authUser(req: Request, res: Response) {
     const { name, pwd } = req.body;
     const foundUser: UserI = users.find(({ userName }) => userName === name);
@@ -73,7 +74,9 @@ export class UserFileDB {
     if (!cookies?.jwt)
       return res.status(400).json({ message: "No cookie found." });
     const accessToken: string = cookies.jwt;
-    const foundUser: UserI = users.find((p) => p.accessToken === accessToken);
+    const foundUser = users.find(
+      (user: UserI) => user.accessToken === accessToken
+    );
     if (!foundUser) {
       res.clearCookie("jwt", cookieConfig);
       return res.status(204).json({ message: "You are logged out." });

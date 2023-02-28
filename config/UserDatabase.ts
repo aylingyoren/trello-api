@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
-import { UserMongoDB } from "../databases/UserMongoDB";
-import { UserFileDB } from "../databases/UserFileDB";
-import { UserPG } from "../databases/UserPG";
+import { UserMongoDB } from "../databases/mongoDB/UserMongoDB";
+import { UserFileDB } from "../databases/fileDB/UserFileDB";
+import { UserPG } from "../databases/pgDB/UserPG";
 
 const MAX_AGE: number = 24 * 60 * 60 * 1000;
 export const cookieConfig = { httpOnly: true, maxAge: MAX_AGE };
