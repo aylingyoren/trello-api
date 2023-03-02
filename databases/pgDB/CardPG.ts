@@ -1,12 +1,10 @@
 import { Request, Response } from "express";
-import Card, { CardMap } from "./model/pgCardModel";
-import { sequelize } from "./model/pgIndex";
+import { Card } from "./model/pgCardModel";
 
 export class CardPG {
   constructor() {}
 
   async getAllItems(req: Request, res: Response) {
-    CardMap(sequelize);
     const cards = await Card.findAll();
     if (cards.length <= 0) return res.json({ message: "No cards found" });
     res.json(cards);
@@ -15,7 +13,6 @@ export class CardPG {
   async createItem(req: Request, res: Response) {
     const { name, description, estimate, status, due_date, labels, board_id } =
       req.body;
-    CardMap(sequelize);
     if (!req?.body)
       return res.status(400).json({ message: "Card details are required." });
     await Card.create({
@@ -34,7 +31,6 @@ export class CardPG {
 
   async updateItem(req: Request, res: Response) {
     const { cardId } = req.params;
-    CardMap(sequelize);
     if (!cardId)
       return res.status(400).json({ message: "Card ID is required." });
     const { name, description, estimate, status, due_date, labels, board_id } =
@@ -48,7 +44,6 @@ export class CardPG {
 
   async deleteItem(req: Request, res: Response) {
     const { cardId } = req.params;
-    CardMap(sequelize);
     if (!cardId)
       return res.status(400).json({ message: "Card ID is required." });
     await Card.destroy({ where: { id: cardId } });
@@ -57,7 +52,6 @@ export class CardPG {
 
   async getItem(req: Request, res: Response) {
     const { cardId } = req.params;
-    CardMap(sequelize);
     if (!cardId)
       return res.status(400).json({ message: "Card ID is required." });
     const card = await Card.findOne({ where: { id: cardId } });

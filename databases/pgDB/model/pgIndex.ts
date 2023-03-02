@@ -11,9 +11,7 @@ const sequelize = new Sequelize({
 
 sequelize
   .authenticate()
-  .then(() => {
-    console.log(`Database connected to trello_postgres`);
-  })
+  .then(() => {})
   .catch((err) => {
     console.log(err);
   });

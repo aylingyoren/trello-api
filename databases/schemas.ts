@@ -10,14 +10,12 @@ export const BoardSchema: Schema = Joi.object().keys({
   name: Joi.string().min(3).max(50).required(),
   color: Joi.string().alphanum().min(3).max(100).required(),
   description: Joi.string().max(300).required(),
-  created_at: Joi.date(),
 });
 
 export const CardSchema: Schema = Joi.object().keys({
   id: Joi.number().integer(),
   name: Joi.string().min(3).max(50).required(),
   description: Joi.string().max(300).required(),
-  created_at: Joi.date(),
   estimate: Joi.string().min(3).max(50).required(),
   status: Joi.string().min(3).max(50).required(),
   due_date: Joi.date(),

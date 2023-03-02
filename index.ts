@@ -42,9 +42,10 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 //   next();
 // });
 
-sequelize.sync().then(() => {
-  console.log("db has been synced");
-});
+sequelize
+  .sync()
+  .then(() => {})
+  .catch((err) => console.log(err));
 
 app.use("/", rootRouter);
 app.use("/register", registerRouter);

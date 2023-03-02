@@ -1,23 +1,21 @@
 import { Request, Response } from "express";
-import User, { UserMap } from "./model/pgUserModel";
-import { sequelize } from "./model/pgIndex";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import { User } from "./model/pgUserModel";
 import { cookieConfig } from "../../config/UserDatabase";
 
 export class UserPG {
   constructor() {}
 
   async findUserByToken(token: string) {
-    UserMap(sequelize);
     return await User.findOne({ where: { accesstoken: token } });
   }
 
   async authUser(req: Request, res: Response) {
     const { name, pwd } = req.body;
-    UserMap(sequelize);
-    const foundUser = await User.findOne({ where: { username: name } });
-
+    const foundUser = await (
+      await User.findOne({ where: { username: name } })
+    ).dataValues;
     if (!foundUser) {
       return res.status(401).json({ message: "You need to sign up!" });
     }
@@ -47,7 +45,6 @@ export class UserPG {
 
   async regUser(req: Request, res: Response) {
     const { name, pwd } = req.body;
-    UserMap(sequelize);
     const duplicate = await User.findOne({ where: { username: name } });
     if (duplicate) {
       return res.status(409).json({ message: `User ${name} already exists.` });
