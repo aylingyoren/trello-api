@@ -2,6 +2,7 @@ import { Response, NextFunction, Request } from "express";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { userDbClass } from "../config/dbClasses";
 import { Roles } from "../config/roles";
+import { User } from "../databases/pgDB/model/pgUserModel";
 
 interface RequestWithParams extends Request {
   headers: {
@@ -25,12 +26,21 @@ const verifyJWT = (
     token,
     process.env.ACCESS_TOKEN_SECRET,
     async (err, decoded: JwtPayload) => {
-      if (err) return res.sendStatus(403);
-      const { roles } = decoded.userInfo;
-      const user = await userDbClass.findUserByToken(token);
-      if (!user) return res.status(403).json({ message: "Please log in." });
-      req.roles = roles;
-      next();
+      if (err) {
+        await User.update(
+          { accesstoken: "" },
+          { where: { accesstoken: token } }
+        );
+        return res
+          .status(403)
+          .json({ message: "Session expired, log in again." });
+      } else {
+        const { roles } = decoded.userInfo;
+        const user = await userDbClass.findUserByToken(token);
+        if (!user) return res.status(403).json({ message: "Please log in." });
+        req.roles = roles;
+        next();
+      }
     }
   );
 };
