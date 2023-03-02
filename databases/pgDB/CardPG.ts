@@ -11,8 +11,7 @@ export class CardPG {
   }
 
   async createItem(req: Request, res: Response) {
-    const { name, description, estimate, status, due_date, labels, board_id } =
-      req.body;
+    const { name, description, estimate, status, due_date, labels } = req.body;
     if (!req?.body)
       return res.status(400).json({ message: "Card details are required." });
     await Card.create({
@@ -22,7 +21,6 @@ export class CardPG {
       status,
       due_date,
       labels,
-      board_id,
     });
     res.json({
       message: `Card with name "${name}" has been created.`,
@@ -33,10 +31,10 @@ export class CardPG {
     const { cardId } = req.params;
     if (!cardId)
       return res.status(400).json({ message: "Card ID is required." });
-    const { name, description, estimate, status, due_date, labels, board_id } =
+    const { name, description, estimate, status, due_date, labels, boardId } =
       req.body;
     await Card.update(
-      { name, description, estimate, status, due_date, labels, board_id },
+      { name, description, estimate, status, due_date, labels, boardId },
       { where: { id: cardId } }
     );
     res.json({ message: `Card ${cardId} has been updated.` });

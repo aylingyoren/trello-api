@@ -1,5 +1,5 @@
 import { DataTypes } from "sequelize";
-import { sequelize } from "./pgIndex";
+import { sequelize } from "../../../config/sequelize";
 
 export const Board = sequelize.define("board", {
   id: {

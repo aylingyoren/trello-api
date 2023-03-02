@@ -1,4 +1,5 @@
 import { Sequelize } from "sequelize";
+import logger from "./logger";
 
 const sequelize = new Sequelize({
   dialect: "postgres",
@@ -7,6 +8,7 @@ const sequelize = new Sequelize({
   database: "trello_postgres",
   username: "postgres",
   password: process.env.POSTGRES_PASS,
+  logging: (msg) => logger.info(msg),
 });
 
 sequelize

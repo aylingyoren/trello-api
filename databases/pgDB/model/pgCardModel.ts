@@ -1,5 +1,5 @@
 import { DataTypes } from "sequelize";
-import { sequelize } from "./pgIndex";
+import { sequelize } from "../../../config/sequelize";
 
 export const Card = sequelize.define("card", {
   id: {
@@ -26,9 +26,5 @@ export const Card = sequelize.define("card", {
     defaultValue: "to-be-done",
   },
   labels: DataTypes.ARRAY(DataTypes.STRING(50)),
-  board_id: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-  },
   due_date: DataTypes.DATE,
 });

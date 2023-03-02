@@ -3,11 +3,13 @@ dotenv.config();
 import express, { Request, Response, NextFunction } from "express";
 const app = express();
 import helmet from "helmet";
-import { sequelize } from "./databases/pgDB/model/pgIndex";
 import cookieParser from "cookie-parser";
 import mongoose from "mongoose";
 
 import { connectDB } from "./config/mongoDBCon";
+import { sequelize } from "./config/sequelize";
+import { Board } from "./databases/pgDB/model/pgBoardModel";
+import { Card } from "./databases/pgDB/model/pgCardModel";
 import rootRouter from "./routes/rootRouter";
 import registerRouter from "./routes/registerRouter";
 import authRouter from "./routes/authRouter";
@@ -41,6 +43,9 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 //   );
 //   next();
 // });
+
+Board.hasMany(Card, { onDelete: "cascade" });
+Card.belongsTo(Board);
 
 sequelize
   .sync()

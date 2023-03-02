@@ -20,5 +20,4 @@ export const CardSchema: Schema = Joi.object().keys({
   status: Joi.string().min(3).max(50).required(),
   due_date: Joi.date(),
   labels: Joi.array().items(Joi.string().min(2).max(50)).required(),
-  board_id: Joi.number().integer().required(),
 });
