@@ -13,33 +13,33 @@ export class UserPG {
 
   async authUser(req: Request, res: Response) {
     const { name, pwd } = req.body;
-    const foundUser = await (
-      await User.findOne({ where: { username: name } })
-    ).dataValues;
-    if (!foundUser) {
+    const foundUserQuery = await User.findOne({ where: { username: name } });
+    if (!foundUserQuery) {
       return res.status(401).json({ message: "You need to sign up!" });
-    }
-    const match: boolean = await bcrypt.compare(pwd, foundUser.password);
-    if (match) {
-      const roles = foundUser.roles;
-      const accessToken: string = jwt.sign(
-        {
-          userInfo: {
-            username: foundUser.username,
-            roles,
-          },
-        },
-        process.env.ACCESS_TOKEN_SECRET,
-        { expiresIn: "1h" }
-      );
-      await User.update(
-        { accesstoken: accessToken },
-        { where: { username: name } }
-      );
-      res.cookie("jwt", accessToken, cookieConfig);
-      res.json({ accessToken });
     } else {
-      res.status(401).json({ message: "Wrong password" });
+      const foundUser = foundUserQuery.dataValues;
+      const match: boolean = await bcrypt.compare(pwd, foundUser.password);
+      if (match) {
+        const roles = foundUser.roles;
+        const accessToken: string = jwt.sign(
+          {
+            userInfo: {
+              username: foundUser.username,
+              roles,
+            },
+          },
+          process.env.ACCESS_TOKEN_SECRET,
+          { expiresIn: "1h" }
+        );
+        await User.update(
+          { accesstoken: accessToken },
+          { where: { username: name } }
+        );
+        res.cookie("jwt", accessToken, cookieConfig);
+        res.json({ accessToken });
+      } else {
+        res.status(401).json({ message: "Wrong password" });
+      }
     }
   }
 
@@ -67,13 +67,14 @@ export class UserPG {
     });
     if (!foundUser) {
       res.clearCookie("jwt", cookieConfig);
+      return res.json({ message: "You are logged out." });
+    } else {
+      await User.update(
+        { accesstoken: "" },
+        { where: { accesstoken: accessToken } }
+      );
+      res.clearCookie("jwt", cookieConfig);
       res.json({ message: "You are logged out." });
     }
-    await User.update(
-      { accesstoken: "" },
-      { where: { accesstoken: accessToken } }
-    );
-    res.clearCookie("jwt", cookieConfig);
-    res.json({ message: "You are logged out." });
   }
 }

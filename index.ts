@@ -55,11 +55,11 @@ sequelize
 app.use("/", rootRouter);
 app.use("/register", registerRouter);
 app.use("/auth", authRouter);
-app.use("/logout", logoutRouter);
 
 app.use(verifyJWT);
 app.use("/api/boards", boardsRouter);
 app.use("/api/cards", cardsRouter);
+app.use("/logout", logoutRouter);
 
 app.use(errorHandler);
 
