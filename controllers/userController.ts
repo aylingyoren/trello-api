@@ -13,7 +13,7 @@ export const handleNewUser = async (req: Request, res: Response) => {
 
 export const handleLogin = async (req: Request, res: Response) => {
   try {
-    await userDbClass.authUser(req, res);
+    await userDbClass.loginUser(req, res);
   } catch (err) {
     res.status(500).json({ message: err.message });
     logger.error(err);

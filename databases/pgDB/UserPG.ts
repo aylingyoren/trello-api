@@ -11,7 +11,7 @@ export class UserPG {
     return await User.findOne({ where: { accesstoken: token } });
   }
 
-  async authUser(req: Request, res: Response) {
+  async loginUser(req: Request, res: Response) {
     const { name, pwd } = req.body;
     const foundUserQuery = await User.findOne({ where: { username: name } });
     if (!foundUserQuery) {

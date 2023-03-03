@@ -15,7 +15,7 @@ export class UserFileDB {
     return users.find(({ accessToken }: UserI) => accessToken === token);
   }
 
-  async authUser(req: Request, res: Response) {
+  async loginUser(req: Request, res: Response) {
     const { name, pwd } = req.body;
     const foundUser: UserI = users.find(({ userName }) => userName === name);
     if (!foundUser) {

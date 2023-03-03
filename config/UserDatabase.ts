@@ -25,8 +25,8 @@ export class UserDatabase {
     return this.db.findUserByToken(token);
   }
 
-  authUser(req: Request, res: Response) {
-    return this.db.authUser(req, res);
+  loginUser(req: Request, res: Response) {
+    return this.db.loginUser(req, res);
   }
 
   regUser(req: Request, res: Response) {

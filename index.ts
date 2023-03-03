@@ -12,7 +12,7 @@ import { Board } from "./databases/pgDB/model/pgBoardModel";
 import { Card } from "./databases/pgDB/model/pgCardModel";
 import rootRouter from "./routes/rootRouter";
 import registerRouter from "./routes/registerRouter";
-import authRouter from "./routes/authRouter";
+import loginRouter from "./routes/loginRouter";
 import logoutRouter from "./routes/logoutRouter";
 import verifyJWT from "./middleware/verifyJWT";
 import boardsRouter from "./routes/api/boardsRouter";
@@ -54,7 +54,7 @@ sequelize
 
 app.use("/", rootRouter);
 app.use("/register", registerRouter);
-app.use("/auth", authRouter);
+app.use("/login", loginRouter);
 
 app.use(verifyJWT);
 app.use("/api/boards", boardsRouter);

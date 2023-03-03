@@ -34,7 +34,7 @@ export class UserMongoDB {
   async findUserByToken(token: string) {
     return await this.findUser({ accessToken: token });
   }
-  async authUser(req: Request, res: Response) {
+  async loginUser(req: Request, res: Response) {
     const { name, pwd } = req.body;
     const foundUser = await this.findUser({ userName: name });
     if (!foundUser) {
