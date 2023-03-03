@@ -22,7 +22,7 @@ export class CardPG {
       due_date,
       labels,
     });
-    res.json({
+    res.status(201).json({
       message: `Card with name "${name}" has been created.`,
     });
   }
@@ -33,10 +33,14 @@ export class CardPG {
       return res.status(400).json({ message: "Card ID is required." });
     const { name, description, estimate, status, due_date, labels, boardId } =
       req.body;
-    await Card.update(
+    const card = await Card.update(
       { name, description, estimate, status, due_date, labels, boardId },
       { where: { id: cardId } }
     );
+    if (card.includes(0))
+      return res
+        .status(404)
+        .json({ message: `No card with id ${cardId} found.` });
     res.json({ message: `Card ${cardId} has been updated.` });
   }
 
@@ -44,7 +48,11 @@ export class CardPG {
     const { cardId } = req.params;
     if (!cardId)
       return res.status(400).json({ message: "Card ID is required." });
-    await Card.destroy({ where: { id: cardId } });
+    const card = await Card.destroy({ where: { id: cardId } });
+    if (!card)
+      return res
+        .status(404)
+        .json({ message: `No card with id ${cardId} found.` });
     res.json({ message: `Card ${cardId} has been deleted.` });
   }
 
@@ -53,7 +61,10 @@ export class CardPG {
     if (!cardId)
       return res.status(400).json({ message: "Card ID is required." });
     const card = await Card.findOne({ where: { id: cardId } });
-    if (!card) return res.json({ message: `No card with id ${cardId} found.` });
+    if (!card)
+      return res
+        .status(404)
+        .json({ message: `No card with id ${cardId} found.` });
     res.json(card);
   }
   // TODO

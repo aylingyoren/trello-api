@@ -25,10 +25,14 @@ export class BoardPG {
     if (!boardId)
       return res.status(400).json({ message: "Board ID is required." });
     const { name, color, description } = req.body;
-    await Board.update(
+    const board = await Board.update(
       { name, color, description },
       { where: { id: boardId } }
     );
+    if (board.includes(0))
+      return res
+        .status(404)
+        .json({ message: `No board with id ${boardId} found.` });
     res.json({ message: `Board ${boardId} has been updated.` });
   }
 
@@ -36,7 +40,11 @@ export class BoardPG {
     const { boardId } = req.params;
     if (!boardId)
       return res.status(400).json({ message: "Board ID is required." });
-    await Board.destroy({ where: { id: boardId } });
+    const board = await Board.destroy({ where: { id: boardId } });
+    if (!board)
+      return res
+        .status(404)
+        .json({ message: `No board with id ${boardId} found.` });
     res.json({ message: `Board ${boardId} has been deleted.` });
   }
 
@@ -46,7 +54,9 @@ export class BoardPG {
       return res.status(400).json({ message: "Board ID is required." });
     const board = await Board.findOne({ where: { id: boardId } });
     if (!board)
-      return res.json({ message: `No board with id ${boardId} found` });
+      return res
+        .status(404)
+        .json({ message: `No board with id ${boardId} found` });
     res.json(board);
   }
 }
